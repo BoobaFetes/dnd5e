@@ -21,20 +21,20 @@ export const HeroItem: FC<IHeroItemProps> = memo(({ hero, onEdit }) => {
         <Grid item xs={12} md={8}>
           <Box sx={{ display: 'flex' }}>
             <Typography>Name :</Typography>
-            <Typography>{hero.name}</Typography> {hero.name}
+            <Typography>{hero.name}</Typography>
           </Box>
           <Box sx={{ display: 'flex' }}>
             <Typography>Race :</Typography>
-            <Typography>{hero.race}</Typography> {hero.name}
+            <Typography>{hero.race}</Typography>
           </Box>
           <Box sx={{ display: 'flex' }}>
             <Typography>Class :</Typography>
-            <Typography>{hero.class}</Typography> {hero.name}
+            <Typography>{hero.class}</Typography>
           </Box>
         </Grid>
         <Grid item xs={12}>
           <Typography>Abilities :</Typography>
-          <Typography>{hero.class}</Typography> {hero.name}
+          <Typography>{hero.class}</Typography>
         </Grid>
       </Grid>
     </Grid>
