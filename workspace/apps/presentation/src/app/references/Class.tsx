@@ -1,20 +1,23 @@
-import { useQueryRaces } from '@boobafetes/dnd5e-api';
+import { useQueryClasses } from '@boobafetes/dnd5e-api';
+import { ClassItem, ClassList } from '@boobafetes/dnd5e-application';
 import { FC, memo } from 'react';
 import { Outlet, Route, Routes } from 'react-router-dom';
-import { IPage, NavBand } from '../../NavBand';
-import { RaceItem } from './RaceItem';
-import { RaceList } from './RaceList';
+import { IPage, NavBand } from '../NavBand';
 
-export const Race: FC = memo(() => {
-  const { data: { races } = { races: [] }, loading, error } = useQueryRaces();
+export const Class: FC = memo(() => {
+  const {
+    data: { classes } = { classes: [] },
+    loading,
+    error,
+  } = useQueryClasses();
 
   const details: IPage[] = error
     ? []
     : loading
-    ? [{ label: 'loading...', to: '/race' }]
-    : races.map(({ index, name }) => ({
+    ? [{ label: 'loading...', to: '/class' }]
+    : classes.map(({ index, name }) => ({
         label: name,
-        to: `/race/${index}`,
+        to: `/class/${index}`,
       }));
 
   return (
@@ -33,8 +36,8 @@ export const Race: FC = memo(() => {
           </NavBand>
         }
       >
-        <Route index element={<RaceList />} />
-        <Route path=":race" element={<RaceItem />} />
+        <Route index element={<ClassList />} />
+        <Route path=":race" element={<ClassItem />} />
       </Route>
     </Routes>
   );

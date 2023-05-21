@@ -3,7 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import styles from './App.module.scss';
 import { Hero } from './Hero';
 import { ResponsiveAppBar } from './ResponsiveAppBar';
-import { Ability, Class, Race } from './dnd5e';
+import { Ability, Class, Race } from './references';
 
 export function App() {
   return (

@@ -19,7 +19,7 @@ export interface IHero {
 
 export function makeHero(obj?: Partial<IHero>): IHero {
   return {
-    id: uuidv4(),
+    id: '',
     img: '',
     race: '',
     class: '',
@@ -81,7 +81,7 @@ export class HeroRepository {
       return false;
     }
 
-    this.save([...this.list, makeHero({ ...hero, id: undefined })]);
+    this.save([...this.list, makeHero({ ...hero, id: uuidv4() })]);
     return true;
   }
 
@@ -111,7 +111,7 @@ export class HeroRepository {
   }
 
   public selected() {
-    return this.list.find((h) => h.selected)?.[0];
+    return this.list.find((h) => h.selected);
   }
 
   public reset() {
