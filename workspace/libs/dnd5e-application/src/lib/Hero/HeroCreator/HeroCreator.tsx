@@ -1,8 +1,4 @@
-import {
-  useQueryAbilityScores,
-  useQueryClasses,
-  useQueryRaces,
-} from '@boobafetes/dnd5e-api';
+import { AbilityScore, Class, IHero, Race } from '@boobafetes/dnd5e-domain';
 import {
   AddCircleOutlineOutlined,
   RefreshOutlined,
@@ -21,65 +17,42 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { FC, memo, useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { HeroRepository, IHero, makeHero } from '../IHero';
-import { PAGE_HEIGHT } from '../variables';
+import { FC, memo, useState } from 'react';
 import { useHeroAbilityCreator } from './useHeroAbilityCreator';
 import { useHeroImage } from './useHeroImage';
 import { useHeroRandomName } from './useHeroRandomName';
 
 interface IHeroCreatorProps {
-  create?: true;
-  edit?: true;
-  heroRepository?: HeroRepository;
+  hero: IHero;
+  races: Race[];
+  classes: Class[];
+  abilityScores: AbilityScore[];
+  loading?: boolean;
+  error?: string;
+  onSave(hero: IHero): void;
 }
 
 export const HeroCreator: FC<IHeroCreatorProps> = memo(
-  ({ create, edit, heroRepository = new HeroRepository() }) => {
-    const params = useParams<{ id?: string }>();
-    const navigate = useNavigate();
+  ({ abilityScores, classes, hero, onSave, races, error, loading }) => {
+    const [current, setCurrent] = useState<IHero>(hero);
 
-    const { nextImage, currentImage, previousImage } = useHeroImage();
+    const { nextImage, currentImage, previousImage } = useHeroImage({
+      onChange(image) {
+        setCurrent({ ...current, img: image.src });
+      },
+    });
     const { roll } = useHeroRandomName();
 
-    const [hero, setHero] = useState<IHero>(
-      create
-        ? makeHero({ name: roll() })
-        : edit && params.id
-        ? heroRepository.get(params.id)
-        : null
-    );
-
     const { actionAbilityScore, randomizeAbilityScore, remainingAbilityScore } =
-      useHeroAbilityCreator(hero, setHero);
-
-    const { data: { abilityScores } = { abilityScores: undefined } } =
-      useQueryAbilityScores();
-
-    const {
-      data: { races } = { races: [] },
-      loading: racesLoading,
-      error: racesError,
-    } = useQueryRaces();
-
-    const {
-      data: { classes } = { classes: [] },
-      loading: classesLoading,
-      error: classesError,
-    } = useQueryClasses();
-
-    useEffect(() => {
-      setHero({ ...hero, img: currentImage.src });
-    }, [hero, currentImage.src]);
+      useHeroAbilityCreator(current, setCurrent);
 
     return (
       <Grid
-        className="hero-creator"
+        className="page hero-creator"
         container
         direction="column"
         wrap="nowrap"
-        sx={{ height: PAGE_HEIGHT, padding: 2, overflow: 'auto' }}
+        sx={{ padding: 2, overflow: 'auto' }}
       >
         <Grid item container>
           <Grid
@@ -104,7 +77,6 @@ export const HeroCreator: FC<IHeroCreatorProps> = memo(
               />
             </Grid>
             <Grid
-              sx={{ display: !create && !edit ? 'none' : undefined }}
               item
               container
               wrap="nowrap"
@@ -123,20 +95,20 @@ export const HeroCreator: FC<IHeroCreatorProps> = memo(
                   fullWidth
                   id="standard-read-only-input"
                   label="Name"
-                  value={hero.name}
+                  value={current.name}
                   InputProps={{
                     readOnly: true,
                   }}
                   variant="standard"
                   onChange={({ target: { value: name } }) =>
-                    setHero({ ...hero, name })
+                    setCurrent({ ...current, name })
                   }
                 />
               </Grid>
               <Grid item flexGrow={0}>
                 <Button
                   onClick={() => {
-                    setHero({ ...hero, name: roll() });
+                    setCurrent({ ...current, name: roll() });
                   }}
                 >
                   <ShuffleOutlined />
@@ -144,16 +116,16 @@ export const HeroCreator: FC<IHeroCreatorProps> = memo(
               </Grid>
             </Grid>
             <Grid item container direction="column" sx={{ marginTop: 3 }}>
-              <InputLabel id="hero-race-select-label">Race</InputLabel>
+              <InputLabel id="current-race-select-label">Race</InputLabel>
               <Select
-                labelId="hero-race-select-label"
-                id="hero-race-select"
-                value={hero.race}
+                labelId="current-race-select-label"
+                id="current-race-select"
+                value={current.race}
                 label="Race"
                 onChange={({ target: { value: race } }) =>
-                  setHero({ ...hero, race })
+                  setCurrent({ ...current, race })
                 }
-                readOnly={racesLoading}
+                readOnly={loading}
               >
                 {races.map((race) => (
                   <MenuItem key={race.index} value={race.index}>
@@ -165,14 +137,14 @@ export const HeroCreator: FC<IHeroCreatorProps> = memo(
             <Grid item container direction="column" sx={{ marginTop: 3 }}>
               <InputLabel id="demo-simple-select-label">Class</InputLabel>
               <Select
-                labelId="hero-race-select-label"
-                id="hero-race-select"
-                value={hero.class}
+                labelId="current-race-select-label"
+                id="current-race-select"
+                value={current.class}
                 label="Race"
                 onChange={({ target: { value } }) =>
-                  setHero({ ...hero, class: value })
+                  setCurrent({ ...current, class: value })
                 }
-                readOnly={classesLoading}
+                readOnly={loading}
               >
                 {classes.map((c) => (
                   <MenuItem key={c.index} value={c.index}>
@@ -217,7 +189,7 @@ export const HeroCreator: FC<IHeroCreatorProps> = memo(
                           {abilityScore.full_name}
                         </Typography>
                         <Typography sx={{ flexGrow: 0, width: 50 }}>
-                          {hero.abilities[abilityScore.index]}
+                          {current.abilities[abilityScore.index]}
                         </Typography>
                         <Button
                           sx={{ flexGrow: 0 }}
@@ -245,12 +217,7 @@ export const HeroCreator: FC<IHeroCreatorProps> = memo(
           </Grid>
         </Grid>
         <Grid item container sx={{ padding: 2 }} alignItems="flex-end">
-          <Button
-            onClick={() => {
-              heroRepository.add(hero);
-              navigate('/hero');
-            }}
-          >
+          <Button onClick={() => onSave({ ...current, img: currentImage.src })}>
             Save
           </Button>
         </Grid>

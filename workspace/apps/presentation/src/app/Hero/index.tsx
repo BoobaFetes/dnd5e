@@ -1,7 +1,6 @@
 import { FC, memo } from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { HeroCreator } from './HeroCreator';
-import { HeroItem } from './HeroItem';
+import { HeroCreate, HeroEdit } from './HeroCreator';
 import { HeroList } from './HeroList';
 
 export const Hero: FC = memo(() => {
@@ -9,8 +8,10 @@ export const Hero: FC = memo(() => {
     <Routes>
       <Route path="/*">
         <Route index element={<HeroList />} />
-        <Route path="create" element={<HeroCreator create />} />
-        <Route path=":id" element={<HeroItem />} />
+        <Route path="edit/*">
+          <Route index element={<HeroCreate />} />
+          <Route path=":id" element={<HeroEdit />} />
+        </Route>
       </Route>
     </Routes>
   );

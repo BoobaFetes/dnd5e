@@ -1,5 +1,5 @@
+import { IHero, makeHero } from '@boobafetes/dnd5e-domain';
 import { useCallback, useState } from 'react';
-import { IHero, makeHero } from '../IHero';
 import { ABILTITY_SCORE_INIT } from '../variables';
 
 type HeroAbility = IHero['abilities'];

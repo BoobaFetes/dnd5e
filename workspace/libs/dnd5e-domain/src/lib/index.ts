@@ -1,1 +1,1 @@
-export * from './dto/graphql';
+export * from './dto';

@@ -1,71 +1,40 @@
+import { IHero, makeHero } from '@boobafetes/dnd5e-domain';
 import { v4 as uuidv4 } from 'uuid';
 
-export interface IHero {
-  id: string;
-  img: string;
-  name: string;
-  race: string;
-  class: string;
-  selected: boolean;
-  abilities: {
-    wis: number;
-    str: number;
-    dex: number;
-    con: number;
-    int: number;
-    cha: number;
-  };
-}
-
-export function makeHero(obj?: Partial<IHero>): IHero {
-  return {
-    id: '',
-    img: '',
-    race: '',
-    class: '',
-    name: '',
-    selected: false,
-    ...obj,
-    abilities: {
-      cha: 8,
-      con: 8,
-      dex: 8,
-      int: 8,
-      str: 8,
-      wis: 8,
-      ...obj?.abilities,
-    },
-  };
-}
+type Observer = (
+  heroes: ReadonlyArray<IHero>,
+  repository?: HeroRepository
+) => void;
 
 export class HeroRepository {
   private key = 'my-heroes';
-  private window: Window;
   private storage: Storage;
-  public onChange?: (heroes: IHero[]) => void;
+  private observers: Observer[] = [];
 
-  constructor(_window: Window = window) {
-    this.window = _window;
-    this.storage = _window.localStorage;
+  constructor(stage: Storage) {
+    this.storage = stage;
     this.list = JSON.parse(this.storage.getItem(this.key) || '[]');
-    this.onChange?.(this.list);
-    // utile ? this.window.addEventListener('storage', this.subscribeToStoreEvent);
   }
 
-  // utile ? public destroy() {
-  // utile ?   this.window.removeEventListener('storage', this.subscribeToStoreEvent);
-  // utile ? }
+  public subscribe(observer: Observer) {
+    this.observers.push(observer);
 
-  // utile ? private subscribeToStoreEvent() {
-  // utile ?
-  // utile ? }
+    const unsubscriber = () => {
+      const index = this.observers.findIndex((obs) => obs === observer);
+      if (index >= 0) {
+        this.observers.splice(index, 1);
+      }
+    };
+
+    return unsubscriber;
+  }
 
   private list: IHero[];
 
   private save(heroes: IHero[]) {
     this.storage.setItem(this.key, JSON.stringify(heroes));
     this.list = heroes;
-    this.onChange?.(this.list);
+    this.observers.forEach((obs) => obs(this.list, this));
   }
 
   public all() {
