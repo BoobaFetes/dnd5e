@@ -1,0 +1,7 @@
+{
+  "name": "@boobafetes/dnd5e-api",
+  "version": "0.0.1",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  }
+}

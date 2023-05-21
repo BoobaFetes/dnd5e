@@ -1,0 +1,54 @@
+{
+  "name": "dnd5e-application",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/dnd5e-application/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": [
+        "{options.outputFile}"
+      ],
+      "options": {
+        "lintFilePatterns": [
+          "libs/dnd5e-application/**/*.{ts,tsx,js,jsx}"
+        ]
+      }
+    },
+    "build": {
+      "executor": "@nx/rollup:rollup",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "outputPath": "dist/libs/dnd5e-application",
+        "tsConfig": "libs/dnd5e-application/tsconfig.lib.json",
+        "project": "libs/dnd5e-application/package.json",
+        "entryFile": "libs/dnd5e-application/src/index.ts",
+        "external": [
+          "react",
+          "react-dom",
+          "react/jsx-runtime"
+        ],
+        "rollupConfig": "@nx/react/plugins/bundle-rollup",
+        "compiler": "babel",
+        "assets": [
+          {
+            "glob": "libs/dnd5e-application/README.md",
+            "input": ".",
+            "output": "."
+          }
+        ],
+        "buildableProjectDepsInPackageJsonType": true,
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
+    "publish": {
+      "dependsOn": [
+        "build"
+      ],
+      "command": "node tools/scripts/publish.mjs dnd5e-application {args.ver} {args.tag}"
+    }
+  }
+}
