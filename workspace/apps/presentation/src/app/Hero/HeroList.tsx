@@ -23,6 +23,7 @@ export const HeroList: FC<IHeroListProps> = memo(
       <HeroListView
         heroes={heroes}
         onAdd={() => navigate('/hero/edit')}
+        onEdit={(hero) => navigate(`/hero/edit/${hero.id}`)}
         onSelect={(hero) => heroRepository.select(hero.id)}
         onDelete={(hero) => heroRepository.remove(hero.id)}
       />

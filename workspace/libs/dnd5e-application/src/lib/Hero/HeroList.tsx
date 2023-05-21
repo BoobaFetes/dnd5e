@@ -1,16 +1,18 @@
 import { IHero } from '@boobafetes/dnd5e-domain';
 import { Button, Grid, Paper, Typography } from '@mui/material';
 import { FC, memo, useMemo } from 'react';
+import { HeroItem } from './HeroItem';
 
 interface IHeroListProps {
   heroes: IHero[];
   onAdd(): void;
+  onEdit?(hero: IHero): void;
   onSelect(hero: IHero): void;
   onDelete(hero: IHero): void;
 }
 
 export const HeroList: FC<IHeroListProps> = memo(
-  ({ heroes, onAdd, onSelect, onDelete }) => {
+  ({ heroes, onAdd, onEdit, onSelect, onDelete }) => {
     const selectedHero = useMemo(() => {
       return heroes.find((hero) => hero.selected);
     }, [heroes]);
@@ -56,11 +58,7 @@ export const HeroList: FC<IHeroListProps> = memo(
         </Grid>
         <Grid item container direction={'column'} xs={12} md={9}>
           <Paper sx={{ flexGrow: 1, overflowY: 'auto', margin: 1, padding: 1 }}>
-            <p>id : {selectedHero?.id}</p>
-            <p>name : {selectedHero?.name}</p>
-            <p>
-              <img alt="your hero" src={selectedHero?.img} />
-            </p>
+            <HeroItem hero={selectedHero} onEdit={() => onEdit(selectedHero)} />
           </Paper>
         </Grid>
       </Grid>

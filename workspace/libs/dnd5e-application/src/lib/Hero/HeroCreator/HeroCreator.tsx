@@ -18,6 +18,7 @@ import {
   Typography,
 } from '@mui/material';
 import { FC, memo, useState } from 'react';
+import { HeroImage } from '../HeroImage';
 import { useHeroAbilityCreator } from './useHeroAbilityCreator';
 import { useHeroImage } from './useHeroImage';
 import { useHeroRandomName } from './useHeroRandomName';
@@ -65,16 +66,7 @@ export const HeroCreator: FC<IHeroCreatorProps> = memo(
             md={4}
           >
             <Grid item container justifyContent="center" wrap="nowrap">
-              <img
-                style={{
-                  width: 300,
-                  height: 300,
-                  objectFit: 'contain',
-                  marginLeft: 16,
-                }}
-                alt="your hero"
-                src={currentImage.src}
-              />
+              <HeroImage src={currentImage.src} />
             </Grid>
             <Grid
               item
