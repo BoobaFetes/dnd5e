@@ -1,4 +1,5 @@
-export const ABILTITY_SCORE_INIT = 27;
+export const ABILTITY_SCORE_MIN = 8;
+export const ABILTITY_SCORE_INIT = 27 + 6 * ABILTITY_SCORE_MIN;
 
 export const HERO_NAMES = [
   'Elysia Seraphine',

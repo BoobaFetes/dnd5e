@@ -1,18 +1,17 @@
-import { IHero } from '@boobafetes/dnd5e-domain';
+import { ICharacter } from '@boobafetes/dnd5e-domain';
 import { Button, Grid, Paper, Typography } from '@mui/material';
 import { FC, memo, useMemo } from 'react';
 import { HeroItem } from './HeroItem';
 
 interface IHeroListProps {
-  heroes: IHero[];
+  heroes: ICharacter[];
   onAdd(): void;
-  onEdit?(hero: IHero): void;
-  onSelect(hero: IHero): void;
-  onDelete(hero: IHero): void;
+  onSelect(hero: ICharacter): void;
+  onDelete(hero: ICharacter): void;
 }
 
 export const HeroList: FC<IHeroListProps> = memo(
-  ({ heroes, onAdd, onEdit, onSelect, onDelete }) => {
+  ({ heroes, onAdd, onSelect, onDelete }) => {
     const selectedHero = useMemo(() => {
       return heroes.find((hero) => hero.selected);
     }, [heroes]);
@@ -36,7 +35,7 @@ export const HeroList: FC<IHeroListProps> = memo(
                     onSelect(hero);
                   }}
                 >
-                  <Grid container key={hero.id}>
+                  <Grid container key={hero.index}>
                     <Grid item xs={8}>
                       {hero.name}
                     </Grid>
@@ -58,7 +57,7 @@ export const HeroList: FC<IHeroListProps> = memo(
         </Grid>
         <Grid item container direction={'column'} xs={12} md={9}>
           <Paper sx={{ flexGrow: 1, overflowY: 'auto', margin: 1, padding: 1 }}>
-            <HeroItem hero={selectedHero} onEdit={() => onEdit(selectedHero)} />
+            <HeroItem hero={selectedHero} />
           </Paper>
         </Grid>
       </Grid>

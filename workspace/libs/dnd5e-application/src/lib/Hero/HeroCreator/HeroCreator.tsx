@@ -1,4 +1,11 @@
-import { AbilityScore, Class, IHero, Race } from '@boobafetes/dnd5e-domain';
+import {
+  AbilityScore,
+  Class,
+  ICharacter,
+  ICharacterAbility,
+  Race,
+  makeCharacter,
+} from '@boobafetes/dnd5e-domain';
 import {
   AddCircleOutlineOutlined,
   RefreshOutlined,
@@ -17,29 +24,29 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { FC, memo, useState } from 'react';
+import { FC, memo, useEffect, useState } from 'react';
 import { HeroImage } from '../HeroImage';
+import { randomizeAbilityScrores } from './randomizeAbilityScrores';
 import { useHeroAbilityCreator } from './useHeroAbilityCreator';
 import { useHeroImage } from './useHeroImage';
 import { useHeroRandomName } from './useHeroRandomName';
 
 interface IHeroCreatorProps {
-  hero: IHero;
   races: Race[];
   classes: Class[];
   abilityScores: AbilityScore[];
   loading?: boolean;
   error?: string;
-  onSave(hero: IHero): void;
+  onSave(hero: ICharacter): void;
 }
 
 export const HeroCreator: FC<IHeroCreatorProps> = memo(
-  ({ abilityScores, classes, hero, onSave, races, error, loading }) => {
-    const [current, setCurrent] = useState<IHero>(hero);
+  ({ abilityScores, classes, onSave, races, error, loading }) => {
+    const [current, setCurrent] = useState<ICharacter>();
 
     const { nextImage, currentImage, previousImage } = useHeroImage({
       onChange(image) {
-        setCurrent({ ...current, img: image.src });
+        setCurrent({ ...current, image: image.src });
       },
     });
     const { roll } = useHeroRandomName();
@@ -47,7 +54,15 @@ export const HeroCreator: FC<IHeroCreatorProps> = memo(
     const { actionAbilityScore, randomizeAbilityScore, remainingAbilityScore } =
       useHeroAbilityCreator(current, setCurrent);
 
-    return (
+    useEffect(() => {
+      setCurrent(
+        makeCharacter({
+          abilities: randomizeAbilityScrores(),
+        })
+      );
+    }, []);
+
+    return !current ? null : (
       <Grid
         className="page hero-creator"
         container
@@ -112,11 +127,15 @@ export const HeroCreator: FC<IHeroCreatorProps> = memo(
               <Select
                 labelId="current-race-select-label"
                 id="current-race-select"
-                value={current.race}
+                value={current.race.index}
                 label="Race"
-                onChange={({ target: { value: race } }) =>
-                  setCurrent({ ...current, race })
-                }
+                onChange={({ target: { value } }) => {
+                  const race = races.find((r) => r.index === value);
+                  setCurrent({
+                    ...current,
+                    race: { index: race?.index, name: race?.name },
+                  });
+                }}
                 readOnly={loading}
               >
                 {races.map((race) => (
@@ -131,11 +150,15 @@ export const HeroCreator: FC<IHeroCreatorProps> = memo(
               <Select
                 labelId="current-race-select-label"
                 id="current-race-select"
-                value={current.class}
+                value={current.class.index}
                 label="Race"
-                onChange={({ target: { value } }) =>
-                  setCurrent({ ...current, class: value })
-                }
+                onChange={({ target: { value } }) => {
+                  const classObj = classes.find((r) => r.index === value);
+                  setCurrent({
+                    ...current,
+                    class: { index: classObj?.index, name: classObj?.name },
+                  });
+                }}
                 readOnly={loading}
               >
                 {classes.map((c) => (
@@ -158,30 +181,35 @@ export const HeroCreator: FC<IHeroCreatorProps> = memo(
                     alignItems="center"
                     sx={{ paddingBottom: 1, borderBottom: '1px solid' }}
                   >
-                    <Typography>
+                    <Typography sx={{ flexGrow: 1 }}>
                       Remaining points : {remainingAbilityScore}
                     </Typography>
-                    <Button
-                      fullWidth={false}
-                      sx={{ marginLeft: 2 }}
-                      onClick={randomizeAbilityScore}
-                    >
+                    <Button fullWidth={false} onClick={randomizeAbilityScore}>
                       <RefreshOutlined />
                     </Button>
                   </Grid>
-                  {abilityScores?.map((abilityScore, index) => {
+                  {abilityScores?.map((abilityScore, arrIndex) => {
+                    const value: ICharacterAbility =
+                      current.abilities[abilityScore.index];
+                    const sign = value.modifier > 0 ? '+' : '';
+                    const bonus = `${sign}${value.modifier}`;
+
                     return (
                       <Grid
                         item
                         container
+                        key={abilityScore.index}
                         alignItems="center"
-                        sx={{ paddingTop: index === 0 ? 2 : 0 }}
+                        sx={{ paddingTop: arrIndex === 0 ? 2 : 0 }}
                       >
                         <Typography sx={{ flexGrow: 1 }}>
-                          {abilityScore.full_name}
+                          {value.name}
                         </Typography>
                         <Typography sx={{ flexGrow: 0, width: 50 }}>
-                          {current.abilities[abilityScore.index]}
+                          {value.value}
+                        </Typography>
+                        <Typography sx={{ flexGrow: 0, width: 50 }}>
+                          {bonus}
                         </Typography>
                         <Button
                           sx={{ flexGrow: 0 }}
@@ -209,7 +237,9 @@ export const HeroCreator: FC<IHeroCreatorProps> = memo(
           </Grid>
         </Grid>
         <Grid item container sx={{ padding: 2 }} alignItems="flex-end">
-          <Button onClick={() => onSave({ ...current, img: currentImage.src })}>
+          <Button
+            onClick={() => onSave({ ...current, image: currentImage.src })}
+          >
             Save
           </Button>
         </Grid>

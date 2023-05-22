@@ -1,8 +1,8 @@
-import { IHero, makeHero } from '@boobafetes/dnd5e-domain';
+import { ICharacter, makeCharacter } from '@boobafetes/dnd5e-domain';
 import { v4 as uuidv4 } from 'uuid';
 
 type Observer = (
-  heroes: ReadonlyArray<IHero>,
+  heroes: ReadonlyArray<ICharacter>,
   repository?: HeroRepository
 ) => void;
 
@@ -29,9 +29,9 @@ export class HeroRepository {
     return unsubscriber;
   }
 
-  private list: IHero[];
+  private list: ICharacter[];
 
-  private save(heroes: IHero[]) {
+  private save(heroes: ICharacter[]) {
     this.storage.setItem(this.key, JSON.stringify(heroes));
     this.list = heroes;
     this.observers.forEach((obs) => obs(this.list, this));
@@ -41,21 +41,21 @@ export class HeroRepository {
     return this.list;
   }
 
-  public get(id: string): IHero | undefined {
-    return this.list.find((h) => h.id === id);
+  public get(index: string): ICharacter | undefined {
+    return this.list.find((h) => h.index === index);
   }
 
-  public add(hero: Partial<IHero>): boolean {
-    if (this.get(hero.id)) {
+  public add(hero: Partial<ICharacter>): boolean {
+    if (this.get(hero.index)) {
       return false;
     }
 
-    this.save([...this.list, makeHero({ ...hero, id: uuidv4() })]);
+    this.save([...this.list, makeCharacter({ ...hero, index: uuidv4() })]);
     return true;
   }
 
-  public update(hero: IHero): boolean {
-    const index = this.list.findIndex((h) => h.id === hero.id);
+  public update(hero: ICharacter): boolean {
+    const index = this.list.findIndex((h) => h.index === hero.index);
     if (index < 0) {
       return false;
     }
@@ -64,23 +64,19 @@ export class HeroRepository {
     return true;
   }
 
-  public remove(id: string): boolean {
-    const index = this.list.findIndex((h) => h.id === id);
-    if (index < 0) {
+  public remove(index: string): boolean {
+    const _index = this.list.findIndex((h) => h.index === index);
+    if (_index < 0) {
       return false;
     }
 
-    this.save(this.list.filter((old, lindex) => lindex !== index));
+    this.save(this.list.filter((old, lindex) => lindex !== _index));
     return true;
   }
 
-  public select(id: string) {
-    const list = this.list.map((h) => ({ ...h, selected: h.id === id }));
+  public select(index: string) {
+    const list = this.list.map((h) => ({ ...h, selected: h.index === index }));
     this.save(list);
-  }
-
-  public selected() {
-    return this.list.find((h) => h.selected);
   }
 
   public reset() {

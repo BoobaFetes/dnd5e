@@ -1,6 +1,6 @@
 import { HeroRepository } from '@boobafetes/dnd5e-api';
 import { HeroList as HeroListView } from '@boobafetes/dnd5e-application';
-import { IHero } from '@boobafetes/dnd5e-domain';
+import { ICharacter } from '@boobafetes/dnd5e-domain';
 import { FC, memo, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DI } from '../DI';
@@ -11,7 +11,7 @@ interface IHeroListProps {
 export const HeroList: FC<IHeroListProps> = memo(
   ({ heroRepository = DI.hero }) => {
     const navigate = useNavigate();
-    const [heroes, setHeroes] = useState<IHero[]>(heroRepository.all());
+    const [heroes, setHeroes] = useState<ICharacter[]>(heroRepository.all());
 
     useEffect(() => {
       return heroRepository.subscribe((list) => {
@@ -22,10 +22,9 @@ export const HeroList: FC<IHeroListProps> = memo(
     return (
       <HeroListView
         heroes={heroes}
-        onAdd={() => navigate('/hero/edit')}
-        onEdit={(hero) => navigate(`/hero/edit/${hero.id}`)}
-        onSelect={(hero) => heroRepository.select(hero.id)}
-        onDelete={(hero) => heroRepository.remove(hero.id)}
+        onAdd={() => navigate('/hero/create')}
+        onSelect={(hero) => heroRepository.select(hero.index)}
+        onDelete={(hero) => heroRepository.remove(hero.index)}
       />
     );
   }

@@ -1,23 +1,32 @@
-import { IHero, makeHero } from '@boobafetes/dnd5e-domain';
+import { ICharacter, ICharacterAbility } from '@boobafetes/dnd5e-domain';
 import { useCallback, useState } from 'react';
-import { ABILTITY_SCORE_INIT } from '../variables';
+import {
+  getModifier,
+  randomizeAbilityScrores,
+} from './randomizeAbilityScrores';
 
-type HeroAbility = IHero['abilities'];
+type HeroAbility = ICharacter['abilities'];
 export type HeroAbilityKeys = keyof HeroAbility | string;
 
 export const useHeroAbilityCreator = (
-  hero: IHero,
-  setHero: (value: IHero) => void,
-  maxAbilityPoints = ABILTITY_SCORE_INIT
+  hero: ICharacter,
+  setHero: (value: ICharacter) => void
 ) => {
-  const [remainingAbilityScore, setRemainingAbilityScore] =
-    useState(maxAbilityPoints);
+  const [remainingAbilityScore, setRemainingAbilityScore] = useState(0);
 
   const actionAbilityScore = useCallback(
     (characteristic: HeroAbilityKeys) => {
       return {
         minus() {
-          if (hero.abilities[characteristic] <= 8) {
+          const ability: ICharacterAbility = {
+            ...hero.abilities[characteristic],
+          };
+          const modifier = ability.modifier;
+          ability.value--;
+          ability.modifier = getModifier(ability);
+          const pointCost = Math.abs(modifier > 0 ? modifier : 1);
+
+          if (ability.value < 8) {
             return;
           }
 
@@ -25,24 +34,31 @@ export const useHeroAbilityCreator = (
             ...hero,
             abilities: {
               ...hero.abilities,
-              [characteristic]: hero.abilities[characteristic] - 1,
+              [characteristic]: ability,
             },
           });
-          setRemainingAbilityScore(remainingAbilityScore + 1);
+          setRemainingAbilityScore(remainingAbilityScore + pointCost);
         },
         plus() {
-          if (remainingAbilityScore <= 0) {
+          const ability: ICharacterAbility = {
+            ...hero.abilities[characteristic],
+          };
+          ability.value++;
+          ability.modifier = getModifier(ability);
+          const pointCost = Math.abs(
+            ability.modifier > 0 ? ability.modifier : 1
+          );
+
+          const nextRemainingAbilityScore = remainingAbilityScore - pointCost;
+          if (nextRemainingAbilityScore < 0 || ability.value > 15) {
             return;
           }
 
           setHero({
             ...hero,
-            abilities: {
-              ...hero.abilities,
-              [characteristic]: hero.abilities[characteristic] + 1,
-            },
+            abilities: { ...hero.abilities, [characteristic]: ability },
           });
-          setRemainingAbilityScore(remainingAbilityScore - 1);
+          setRemainingAbilityScore(nextRemainingAbilityScore);
         },
       };
     },
@@ -51,28 +67,10 @@ export const useHeroAbilityCreator = (
 
   return {
     randomizeAbilityScore() {
-      setHero({ ...hero, abilities: randomize(maxAbilityPoints) });
+      setHero({ ...hero, abilities: randomizeAbilityScrores() });
       setRemainingAbilityScore(0);
     },
     remainingAbilityScore,
     actionAbilityScore,
   };
-};
-
-const randomize = (maxAbilityPoints: number) => {
-  let remainingPoints = maxAbilityPoints; // Nombre total de points à répartir
-
-  const abilityScore = makeHero().abilities;
-  const characteristics = Object.keys(abilityScore);
-
-  // Répartition aléatoire des points
-  while (remainingPoints > 0) {
-    const randomIndex = Math.floor(Math.random() * characteristics.length);
-    const randomCharacteristic = characteristics[randomIndex];
-
-    abilityScore[randomCharacteristic]++;
-    remainingPoints--;
-  }
-
-  return abilityScore;
 };
