@@ -24,6 +24,11 @@ export const useHeroImage = ({ onChange }: UseHeroChangeArgs) => {
     return { label: `${category} - ${imgIndex}`, src };
   }, []);
 
+  const randomImage = useCallback(() => {
+    const index = Math.floor(Math.random() * HERO_IMAGES.length);
+    return HERO_IMAGES[index];
+  }, []);
+
   return useMemo(
     () => ({
       previousImage() {
@@ -35,6 +40,7 @@ export const useHeroImage = ({ onChange }: UseHeroChangeArgs) => {
         onChange(getCurrentImage(_index));
       },
       currentImage: getCurrentImage(index),
+      randomImage,
       nextImage() {
         let _index = index + 1;
         if (index >= HERO_IMAGES.length - 1) {
@@ -44,6 +50,6 @@ export const useHeroImage = ({ onChange }: UseHeroChangeArgs) => {
         onChange(getCurrentImage(_index));
       },
     }),
-    [getCurrentImage, index, onChange]
+    [getCurrentImage, index, onChange, randomImage]
   );
 };

@@ -44,11 +44,12 @@ export const HeroCreator: FC<IHeroCreatorProps> = memo(
   ({ abilityScores, classes, onSave, races, error, loading }) => {
     const [current, setCurrent] = useState<ICharacter>();
 
-    const { nextImage, currentImage, previousImage } = useHeroImage({
-      onChange(image) {
-        setCurrent({ ...current, image: image.src });
-      },
-    });
+    const { nextImage, currentImage, randomImage, previousImage } =
+      useHeroImage({
+        onChange(image) {
+          setCurrent({ ...current, image: image.src });
+        },
+      });
     const { roll } = useHeroRandomName();
 
     const { actionAbilityScore, randomizeAbilityScore, remainingAbilityScore } =
@@ -57,10 +58,12 @@ export const HeroCreator: FC<IHeroCreatorProps> = memo(
     useEffect(() => {
       setCurrent(
         makeCharacter({
+          name: roll(),
+          image: randomImage(),
           abilities: randomizeAbilityScrores(),
         })
       );
-    }, []);
+    }, [randomImage, roll]);
 
     return !current ? null : (
       <Grid
@@ -81,7 +84,7 @@ export const HeroCreator: FC<IHeroCreatorProps> = memo(
             md={4}
           >
             <Grid item container justifyContent="center" wrap="nowrap">
-              <HeroImage src={currentImage.src} />
+              <HeroImage src={current.image} />
             </Grid>
             <Grid
               item
