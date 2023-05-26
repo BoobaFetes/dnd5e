@@ -11,7 +11,7 @@ export class HeroRepository {
   private storage: Storage;
   private observers: Observer[] = [];
 
-  constructor(stage: Storage) {
+  constructor(stage: Storage = window.localStorage) {
     this.storage = stage;
     this.list = JSON.parse(this.storage.getItem(this.key) || '[]');
   }
@@ -54,13 +54,17 @@ export class HeroRepository {
     return true;
   }
 
-  public update(hero: ICharacter): boolean {
+  public update(hero: Partial<ICharacter>): boolean {
     const index = this.list.findIndex((h) => h.index === hero.index);
     if (index < 0) {
       return false;
     }
 
-    this.save(this.list.map((old, lindex) => (lindex === index ? hero : old)));
+    this.save(
+      this.list.map((old, lindex) =>
+        lindex === index ? { ...old, hero } : old
+      )
+    );
     return true;
   }
 

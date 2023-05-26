@@ -1,7 +1,0 @@
-{
-  "name": "@boobafetes/dnd5e-application",
-  "version": "0.0.1",
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
-  }
-}

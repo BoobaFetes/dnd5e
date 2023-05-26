@@ -16,7 +16,6 @@
     "baseUrl": ".",
     "paths": {
       "@boobafetes/dnd5e-api": ["libs/dnd5e-api/src/index.ts"],
-      "@boobafetes/dnd5e-application": ["libs/dnd5e-application/src/index.ts"],
       "@boobafetes/dnd5e-domain": ["libs/dnd5e-domain/src/index.ts"]
     }
   },
