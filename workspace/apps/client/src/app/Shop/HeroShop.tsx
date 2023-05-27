@@ -214,7 +214,6 @@ export const HeroShop: FC<IHeroShopProps> = memo(
                           <Typography>{category.name}</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                          {' '}
                           <Grid container>
                             {[...melee, ...ranged].map((weapon) => {
                               const isOwned = !!hero.equipement.armors.find(
@@ -222,6 +221,7 @@ export const HeroShop: FC<IHeroShopProps> = memo(
                               );
                               return (
                                 <Grid
+                                  key={weapon.index}
                                   item
                                   container
                                   xs={12}
@@ -229,7 +229,6 @@ export const HeroShop: FC<IHeroShopProps> = memo(
                                   flexWrap="nowrap"
                                 >
                                   <Button
-                                    key={weapon.index}
                                     sx={{ marginX: 2 }}
                                     onClick={() => {
                                       const shopItem = new WeaponShopItem(hero);
