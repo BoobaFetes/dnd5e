@@ -7,30 +7,20 @@
   "targets": {
     "lint": {
       "executor": "@nx/linter:eslint",
-      "outputs": [
-        "{options.outputFile}"
-      ],
+      "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": [
-          "libs/dnd5e-api/**/*.{ts,tsx,js,jsx}"
-        ]
+        "lintFilePatterns": ["libs/dnd5e-api/**/*.{ts,tsx,js,jsx}"]
       }
     },
     "build": {
       "executor": "@nx/rollup:rollup",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/libs/dnd5e-api",
         "tsConfig": "libs/dnd5e-api/tsconfig.lib.json",
         "project": "libs/dnd5e-api/package.json",
         "entryFile": "libs/dnd5e-api/src/index.ts",
-        "external": [
-          "react",
-          "react-dom",
-          "react/jsx-runtime"
-        ],
+        "external": ["react", "react-dom", "react/jsx-runtime"],
         "rollupConfig": "@nx/react/plugins/bundle-rollup",
         "compiler": "babel",
         "assets": [
@@ -39,15 +29,11 @@
             "input": ".",
             "output": "."
           }
-        ],
-        "buildableProjectDepsInPackageJsonType": true,
-        "updateBuildableProjectDepsInPackageJson": true
+        ]
       }
     },
     "publish": {
-      "dependsOn": [
-        "build"
-      ],
+      "dependsOn": ["build"],
       "command": "node tools/scripts/publish.mjs dnd5e-api {args.ver} {args.tag}"
     }
   }

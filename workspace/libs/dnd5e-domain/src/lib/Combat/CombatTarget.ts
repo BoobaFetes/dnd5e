@@ -48,21 +48,19 @@ export class CombatTarget implements ICombatTargetProperties {
 
   static convertFromHero(hero: ICharacter): CombatTarget {
     // Convertit un objet de type IHero en instance de Character
-    const character =
-      new CombatTarget(/* initialisez les propriétés communes */);
+    const character = undefined as any; // new CombatTarget(/* initialisez les propriétés communes */);
     // Copiez les propriétés spécifiques du héros dans l'instance de Character
     // Utilisez les valeurs de hero pour initialiser les propriétés de character
     return character;
   }
 
-  static convertFromMonster(monster: IMonster): CombatTarget {
-    // Convertit un objet de type IMonster en instance de Character
-    const character =
-      new CombatTarget(/* initialisez les propriétés communes */);
-    // Copiez les propriétés spécifiques du monstre dans l'instance de Character
-    // Utilisez les valeurs de monster pour initialiser les propriétés de character
-    return character;
-  }
+  // static convertFromMonster(monster: IMonster): CombatTarget {
+  //   // Convertit un objet de type IMonster en instance de Character
+  //   const character = undefined as any; // new CombatTarget(/* initialisez les propriétés communes */);
+  //   // Copiez les propriétés spécifiques du monstre dans l'instance de Character
+  //   // Utilisez les valeurs de monster pour initialiser les propriétés de character
+  //   return character;
+  // }
 
   public attack(
     target: CombatTarget,
@@ -74,7 +72,7 @@ export class CombatTarget implements ICombatTargetProperties {
       attackRoll === 1 ? false : attackRoll + modifiers >= target.armorClass;
 
     if (attackResult) {
-      const damage = this.calculateDamage(attackType);
+      const damage = 0; //this.calculateDamage(attackType);
       const isCriticalHit = attackRoll === 20;
       target.takeDamage(damage);
 
