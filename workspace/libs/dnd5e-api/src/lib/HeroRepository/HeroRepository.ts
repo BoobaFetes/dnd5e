@@ -54,7 +54,7 @@ export class HeroRepository {
     return true;
   }
 
-  public update(hero: Partial<ICharacter>): boolean {
+  public update(hero: ICharacter): boolean {
     const index = this.list.findIndex((h) => h.index === hero.index);
     if (index < 0) {
       return false;
@@ -62,7 +62,7 @@ export class HeroRepository {
 
     this.save(
       this.list.map((old, lindex) =>
-        lindex === index ? { ...old, hero } : old
+        lindex === index ? { ...old, ...hero } : old
       )
     );
     return true;
@@ -76,11 +76,6 @@ export class HeroRepository {
 
     this.save(this.list.filter((old, lindex) => lindex !== _index));
     return true;
-  }
-
-  public select(index: string) {
-    const list = this.list.map((h) => ({ ...h, selected: h.index === index }));
-    this.save(list);
   }
 
   public reset() {

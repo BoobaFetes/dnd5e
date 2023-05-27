@@ -22,6 +22,8 @@ export const HeroList: FC<IHeroListProps> = memo(
     const navigate = useNavigate();
     const [heroes, setHeroes] = useState<ICharacter[]>(heroRepository.all());
 
+    const refresh = () => setHeroes(heroRepository.all());
+
     useEffect(() => {
       return heroRepository.subscribe((list) => {
         setHeroes([...list]);
@@ -29,7 +31,7 @@ export const HeroList: FC<IHeroListProps> = memo(
     }, [heroRepository, setHeroes]);
 
     const onAdd = () => navigate('/hero/create');
-    const onSelect = (hero: ICharacter) => heroRepository.select(hero.index);
+    const onUpdate = (hero: ICharacter) => heroRepository.update(hero);
     const onDelete = (hero: ICharacter) => heroRepository.remove(hero.index);
 
     return (
@@ -64,17 +66,41 @@ export const HeroList: FC<IHeroListProps> = memo(
                     sx={{
                       display: 'flex',
                       flexWrap: 'nowrap',
-                      justifyContent: 'space-evenly',
+                      justifyContent: 'space-between',
                       alignItems: 'center',
+                      marginBottom: 2,
                     }}
                   >
-                    <Button sx={{ width: 75 }} onClick={() => onSelect(hero)}>
-                      <Typography>
-                        {hero.selected ? 'Unselect' : 'Select'}
-                      </Typography>
-                    </Button>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexWrap: 'nowrap',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Button
+                        sx={{ width: 100 }}
+                        onClick={() => {
+                          if (onUpdate({ ...hero, selected: !hero.selected })) {
+                            refresh();
+                          }
+                        }}
+                      >
+                        <Typography>
+                          {hero.selected ? 'Unselect' : 'Select'}
+                        </Typography>
+                      </Button>
+                      <Button
+                        sx={{ width: 100 }}
+                        onClick={() => {
+                          navigate(`/shop/${hero.index}`);
+                        }}
+                      >
+                        <Typography>Shopping</Typography>
+                      </Button>
+                    </Box>
                     <Button
-                      sx={{ width: 75, color: 'red' }}
+                      sx={{ width: 100, color: 'red' }}
                       onClick={() => onDelete(hero)}
                     >
                       <Typography>Delete</Typography>

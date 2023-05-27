@@ -5,6 +5,7 @@ import { Route, Routes } from 'react-router-dom';
 import styles from './App.module.scss';
 import { Hero } from './Hero';
 import { ResponsiveAppBar } from './ResponsiveAppBar';
+import { Shop } from './Shop';
 import { Ability, Class, Race } from './references';
 
 export function App() {
@@ -38,6 +39,7 @@ export function App() {
         <Routes>
           <Route path="/" element={null} />
           <Route path="/hero/*" element={<Hero />} />
+          <Route path="/shop/*" element={<Shop />} />
           <Route path="/race/*" element={<Race />} />
           <Route path="/class/*" element={<Class />} />
           <Route path="/ability/*" element={<Ability />} />

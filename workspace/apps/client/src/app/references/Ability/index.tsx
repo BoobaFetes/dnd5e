@@ -1,8 +1,9 @@
 import { useQueryAbilityScores } from '@boobafetes/dnd5e-api';
 import { FC, memo } from 'react';
 import { Outlet, Route, Routes } from 'react-router-dom';
-import { AbilityItem, AbilityList } from '../Ability';
-import { IPage, NavBand } from '../NavBand';
+import { IPage, NavBand } from '../../NavBand';
+import { AbilityItem } from './AbilityItem';
+import { AbilityList } from './AbilityList';
 
 export const Ability: FC = memo(() => {
   const {
