@@ -40,36 +40,13 @@ export const HeroCreator: FC<IHeroCreatorProps> = memo(
       data: { races } = { races: [] },
       loading: racesLoading,
       error: racesError,
-    } = useQueryRaces({
-      onCompleted({ races }) {
-        if (races) {
-          const index = Math.floor(Math.random() * races.length);
-          setCurrent({
-            ...current,
-            race: { index: races[index]?.index, name: races[index]?.name },
-          });
-        }
-      },
-    });
+    } = useQueryRaces();
 
     const {
       data: { classes } = { classes: [] },
       loading: classesLoading,
       error: classesError,
-    } = useQueryClasses({
-      onCompleted({ classes }) {
-        if (classes) {
-          const index = Math.floor(Math.random() * classes.length);
-          setCurrent({
-            ...current,
-            class: { index: classes[index]?.index, name: classes[index]?.name },
-            gold:
-              new Dice(getGoldDiceByClassIndex(classes[index]?.index)).roll() *
-              10,
-          });
-        }
-      },
-    });
+    } = useQueryClasses();
 
     const onSave = (hero: ICharacter) => {
       if (heroRepository.add(hero)) {
@@ -88,13 +65,30 @@ export const HeroCreator: FC<IHeroCreatorProps> = memo(
       useHeroAbilityCreator(current, setCurrent);
 
     useEffect(() => {
-      setCurrent(
-        makeCharacter({
-          name: roll(),
-          abilities: randomizeAbilityScrores(),
-        })
-      );
-    }, [roll]);
+      if (!classesLoading && !racesLoading) {
+        const classIndex = Math.floor(Math.random() * classes.length);
+        const raceIndex = Math.floor(Math.random() * races.length);
+
+        setCurrent(
+          makeCharacter({
+            name: roll(),
+            abilities: randomizeAbilityScrores(),
+            race: {
+              index: races[raceIndex].index,
+              name: races[raceIndex].name,
+            },
+            class: {
+              index: classes[classIndex].index,
+              name: classes[classIndex].name,
+            },
+            gold:
+              new Dice(
+                getGoldDiceByClassIndex(classes[classIndex].index)
+              ).roll() * 10,
+          })
+        );
+      }
+    }, [roll, classesLoading, classes, racesLoading, races]);
 
     const loading = classesLoading || racesLoading;
 
@@ -169,7 +163,7 @@ export const HeroCreator: FC<IHeroCreatorProps> = memo(
               <Select
                 labelId="current-race-select-label"
                 id="current-race-select"
-                value={current.race.index}
+                value={current.race?.index}
                 label="Race"
                 onChange={({ target: { value } }) => {
                   const race = races.find((r) => r.index === value);
