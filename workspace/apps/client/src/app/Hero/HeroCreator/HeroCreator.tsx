@@ -42,11 +42,13 @@ export const HeroCreator: FC<IHeroCreatorProps> = memo(
       error: racesError,
     } = useQueryRaces({
       onCompleted({ races }) {
-        const index = Math.floor(Math.random() * races.length);
-        setCurrent({
-          ...current,
-          race: { index: races[index]?.index, name: races[index]?.name },
-        });
+        if (races) {
+          const index = Math.floor(Math.random() * races.length);
+          setCurrent({
+            ...current,
+            race: { index: races[index]?.index, name: races[index]?.name },
+          });
+        }
       },
     });
 
@@ -56,14 +58,16 @@ export const HeroCreator: FC<IHeroCreatorProps> = memo(
       error: classesError,
     } = useQueryClasses({
       onCompleted({ classes }) {
-        const index = Math.floor(Math.random() * classes.length);
-        setCurrent({
-          ...current,
-          class: { index: classes[index]?.index, name: classes[index]?.name },
-          gold:
-            new Dice(getGoldDiceByClassIndex(classes[index]?.index)).roll() *
-            10,
-        });
+        if (classes) {
+          const index = Math.floor(Math.random() * classes.length);
+          setCurrent({
+            ...current,
+            class: { index: classes[index]?.index, name: classes[index]?.name },
+            gold:
+              new Dice(getGoldDiceByClassIndex(classes[index]?.index)).roll() *
+              10,
+          });
+        }
       },
     });
 
