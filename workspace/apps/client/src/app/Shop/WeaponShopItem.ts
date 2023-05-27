@@ -47,8 +47,9 @@ export class WeaponShopItem {
         if (
           this.hero.equipement.ranged &&
           this.hero.equipement.ranged?.index === equipement.index
-        )
+        ) {
           weapon = this.hero.equipement.ranged;
+        }
         break;
       default:
         weapon = this.hero.equipement.melees.find(
@@ -67,10 +68,10 @@ export class WeaponShopItem {
     this.hero.gold -= equipement.cost.quantity;
     switch (equipement.weapon_range) {
       case WeaponRange.Ranged:
-        this.hero.equipement.ranged = weapon;
+        this.hero.equipement.ranged = equipement;
         break;
       default:
-        this.hero.equipement.melees.push(weapon);
+        this.hero.equipement.melees.push(equipement);
         break;
     }
 
