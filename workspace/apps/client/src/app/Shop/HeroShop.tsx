@@ -216,9 +216,12 @@ export const HeroShop: FC<IHeroShopProps> = memo(
                         <AccordionDetails>
                           <Grid container>
                             {[...melee, ...ranged].map((weapon) => {
-                              const isOwned = !!hero.equipement.armors.find(
-                                (a) => a.index === weapon.index
-                              );
+                              const isOwned =
+                                hero.equipement.ranged?.index ===
+                                  weapon.index ||
+                                !!hero.equipement.melees.find(
+                                  (a) => a.index === weapon.index
+                                );
                               return (
                                 <Grid
                                   key={weapon.index}
