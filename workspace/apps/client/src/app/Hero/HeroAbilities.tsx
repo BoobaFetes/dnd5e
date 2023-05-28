@@ -40,18 +40,21 @@ export const HeroAbilities: FC<IHeroAbilitiesProps> = memo(
 
 interface IAbilityButtonsProps {
   abilityIndex: string;
-  action(abilityIndex: string): {
-    minus(): void;
-    plus(): void;
+  action: {
+    minus(abilityIndex: string): void;
+    plus(abilityIndex: string): void;
   };
 }
-const AbilityButtons: FC<IAbilityButtonsProps> = ({ action, abilityIndex }) => {
+const AbilityButtons: FC<IAbilityButtonsProps> = ({
+  action: { minus, plus },
+  abilityIndex,
+}) => {
   return (
     <>
-      <Button sx={{ flexGrow: 0 }} onClick={action(abilityIndex).minus}>
+      <Button sx={{ flexGrow: 0 }} onClick={() => minus(abilityIndex)}>
         <RemoveCircleOutlineOutlined />
       </Button>
-      <Button sx={{ flexGrow: 0 }} onClick={action(abilityIndex).plus}>
+      <Button sx={{ flexGrow: 0 }} onClick={() => plus(abilityIndex)}>
         <AddCircleOutlineOutlined />
       </Button>
     </>

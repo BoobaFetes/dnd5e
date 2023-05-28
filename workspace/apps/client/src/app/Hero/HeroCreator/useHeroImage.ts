@@ -6,15 +6,10 @@ type CurrentImageType = {
   src: string;
 };
 
-interface UseHeroChangeArgs {
-  onChange(img: CurrentImageType): void;
-}
-
-export const useHeroImage = ({ onChange }: UseHeroChangeArgs) => {
+export const useHeroImage = () => {
   const [index, setIndex] = useState(randomIndex());
 
-  const getCurrentImage = useCallback((current: number) => {
-    const src = HERO_IMAGES[current];
+  const getImageBySrc = useCallback((src: string) => {
     const file = src.substring('./assets/'.length);
 
     const category = file.substring(0, file.indexOf('/'));
@@ -32,23 +27,35 @@ export const useHeroImage = ({ onChange }: UseHeroChangeArgs) => {
           _index = HERO_IMAGES.length - 1;
         }
         setIndex(_index);
-        onChange(getCurrentImage(_index));
+        return getImageBySrc(HERO_IMAGES[_index]);
       },
-      currentImage: getCurrentImage(index),
-
+      currentImage: getImageBySrc(HERO_IMAGES[index]),
       nextImage() {
         let _index = index + 1;
         if (index >= HERO_IMAGES.length - 1) {
           _index = 0;
         }
         setIndex(_index);
-        onChange(getCurrentImage(_index));
+        return getImageBySrc(HERO_IMAGES[_index]);
       },
     }),
-    [getCurrentImage, index, onChange]
+    [getImageBySrc, index]
   );
 };
 
 function randomIndex() {
   return Math.floor(Math.random() * HERO_IMAGES.length);
+}
+
+export function getImageBySrc(src: string): CurrentImageType {
+  if (!src) {
+    return { label: undefined, src };
+  }
+  const file = src.substring('./assets/'.length);
+
+  const category = file.substring(0, file.indexOf('/'));
+
+  const imgIndex = file.substring(file.indexOf('/') + 1, file.indexOf('.'));
+
+  return { label: `${category} - ${imgIndex}`, src };
 }

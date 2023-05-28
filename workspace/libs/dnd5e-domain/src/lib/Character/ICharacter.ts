@@ -7,10 +7,11 @@ export interface ICharacter {
   index: string;
   image: string;
   name: string;
+  health: number;
   xp: number;
   gold: number;
-  race: Pick<Race, 'index' | 'name'>;
-  class: Pick<Class, 'index' | 'name'>;
+  race: Race;
+  class: Class;
   abilities: ICharacterAbilities;
   equipement: ICharacterEquipment;
 }
@@ -23,8 +24,11 @@ export function makeCharacter(obj?: Partial<ICharacter>): ICharacter {
     name: '',
     xp: 0,
     gold: 0,
-    race: { index: '', name: '' },
-    class: { index: '', name: '' },
+    health: 0,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    race: { index: '', name: '' } as any,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    class: { index: '', name: '' } as any,
     equipement: {
       armors: [],
       melees: [],
