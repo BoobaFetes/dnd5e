@@ -5,7 +5,7 @@ import {
 } from '@boobafetes/dnd5e-domain';
 import { Box, Button, Typography } from '@mui/material';
 import { FC, memo } from 'react';
-import { HeroImage } from '../Hero/HeroImage';
+import { HeroImage } from '../../Hero/HeroImage';
 import LifeBar from './LifeBar';
 
 interface IAttackerProps {
