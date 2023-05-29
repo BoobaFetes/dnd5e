@@ -96,9 +96,6 @@ export const HeroCreator: FC = memo(() => {
                 id="standard-read-only-input"
                 label="Name"
                 value={hero.name}
-                InputProps={{
-                  readOnly: true,
-                }}
                 variant="standard"
                 onChange={({ target: { value: name } }) => setName(name)}
               />
