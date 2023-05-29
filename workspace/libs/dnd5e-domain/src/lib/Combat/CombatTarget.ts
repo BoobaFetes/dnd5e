@@ -3,8 +3,7 @@ import {
   ICharacterAbilities,
   ICharacterAbility,
 } from '../Character';
-import { ICharacterEquipment } from '../Character/ICharacterEquipment';
-import { Class, Damage, Maybe, Spell, WeaponRange } from '../dto';
+import { Damage, Maybe, WeaponRange } from '../dto';
 import { DamageObserver } from './DamageObserver';
 import { ICombatTargetProperties } from './ICombatTargetProperties';
 
@@ -13,45 +12,38 @@ export class CombatTarget implements ICombatTargetProperties {
   allies: CombatTarget[];
   // implements ICombatTargetProperties
   isPlayer: boolean;
-  name: string;
-  hitPoints: number;
+  character: ICharacter;
   armorClass: number;
-  equipement: ICharacterEquipment;
-  classObj: Pick<Class, 'index' | 'name' | 'spellcasting'>;
-  abilities: ICharacterAbilities;
 
   constructor({
     isPlayer,
-    name,
-    hitPoints,
-    equipement,
-    abilities,
-    classObj,
-  }: ICombatTargetProperties) {
+    character,
+  }: Omit<ICombatTargetProperties, 'armorClass'>) {
     this.isPlayer = isPlayer;
-    this.name = name;
-    this.hitPoints = hitPoints;
-    this.equipement = equipement;
-    this.armorClass = this.equipement.armors.reduce((result, armor) => {
-      result += armor.armor_class.base;
-      if (armor.armor_class.dex_bonus && this.abilities.dex.modifier > 0) {
-        result += this.abilities.dex.modifier;
-      }
-      return result;
-    }, 0);
-
-    this.abilities = abilities;
-    this.classObj = classObj;
+    this.character = character;
+    this.armorClass = this.character.equipement.armors.reduce(
+      (result, armor) => {
+        result += armor.armor_class.base;
+        if (
+          armor.armor_class.dex_bonus &&
+          this.character.abilities.dex.modifier > 0
+        ) {
+          result += this.character.abilities.dex.modifier;
+        }
+        return result;
+      },
+      0
+    );
     this.allies = [];
     this.attackObservers = [];
   }
 
-  static convertFromHero(hero: ICharacter): CombatTarget {
+  static convertFromCharacter(character: ICharacter): CombatTarget {
     // Convertit un objet de type IHero en instance de Character
-    const character = undefined as any; // new CombatTarget(/* initialisez les propriétés communes */);
-    // Copiez les propriétés spécifiques du héros dans l'instance de Character
-    // Utilisez les valeurs de hero pour initialiser les propriétés de character
-    return character;
+    return new CombatTarget({
+      isPlayer: true,
+      character,
+    });
   }
 
   // static convertFromMonster(monster: IMonster): CombatTarget {
@@ -72,12 +64,13 @@ export class CombatTarget implements ICombatTargetProperties {
       attackRoll === 1 ? false : attackRoll + modifiers >= target.armorClass;
 
     if (attackResult) {
-      const damage = 0; //this.calculateDamage(attackType);
+      const damage = this.calculateDamage(attackType);
       const isCriticalHit = attackRoll === 20;
       target.takeDamage(damage);
 
       // Notify observers
       this.notifyAttackObservers(
+        target,
         true,
         attackType,
         damage,
@@ -85,27 +78,34 @@ export class CombatTarget implements ICombatTargetProperties {
         false
       );
 
-      console.log(`${this.name} a réussi son attaque !`);
+      console.log(`${this.character.name} a réussi son attaque !`);
     } else {
       const isCriticalMiss = attackRoll === 1;
 
       // Notify observers
-      this.notifyAttackObservers(false, attackType, 0, false, isCriticalMiss);
+      this.notifyAttackObservers(
+        target,
+        false,
+        attackType,
+        0,
+        false,
+        isCriticalMiss
+      );
 
-      console.log(`${this.name} a raté son attaque.`);
+      console.log(`${this.character.name} a raté son attaque.`);
     }
 
+    if (target.character.health <= 0) {
+      console.log(`${target.character.name} est mort !`);
+
+      // Notify observers
+      target.notifyDeathObservers(this);
+    }
     return attackResult;
   }
 
   public takeDamage(damage: number): void {
-    this.hitPoints -= damage;
-    if (this.hitPoints <= 0) {
-      console.log(`${this.name} est mort !`);
-
-      // Notify observers
-      this.notifyDeathObservers();
-    }
+    this.character.health -= damage;
   }
 
   public attachAttackObserver(observer: DamageObserver): () => void {
@@ -120,7 +120,12 @@ export class CombatTarget implements ICombatTargetProperties {
     }
   }
 
+  public detachAllAttackObservers(): void {
+    this.attackObservers = [];
+  }
+
   private notifyAttackObservers(
+    target: CombatTarget,
     success: boolean,
     attackType: WeaponRange | 'SPELL',
     damage: number,
@@ -129,6 +134,8 @@ export class CombatTarget implements ICombatTargetProperties {
   ): void {
     for (const observer of this.attackObservers) {
       observer.attackResult(
+        this,
+        target,
         success,
         attackType,
         damage,
@@ -138,9 +145,9 @@ export class CombatTarget implements ICombatTargetProperties {
     }
   }
 
-  private notifyDeathObservers(): void {
+  private notifyDeathObservers(killer: CombatTarget): void {
     for (const observer of this.attackObservers) {
-      observer.characterDied(this);
+      observer.characterDied(this, killer);
     }
   }
 
@@ -174,33 +181,30 @@ export class CombatTarget implements ICombatTargetProperties {
     // Calcul du modificateur en fonction de la valeur de Force du personnage et son modificateur de maitrise en fonction de son niveau
     // ajoute le modificateur de maitrise
 
-    return this.abilities.str.value;
+    return this.character.abilities.str.value;
   }
 
   private dexterityModifier(): number {
     // Retourne le modificateur de caractéristique (Dextérité) du personnage
     // Calcul du modificateur en fonction de la valeur de Dextérité du personnage et son modificateur de maitrise en fonction de son niveau
-    return this.abilities.dex.value;
+    return this.character.abilities.dex.value;
   }
 
   private spellcastingModifier(): number {
     // Retourne le modificateur de caractéristique (Dextérité) du personnage
     // Calcul du modificateur en fonction de la valeur de Dextérité du personnage et son modificateur de maitrise en fonction de son niveau
 
-    const abilityIndex = this.classObj.spellcasting?.spellcasting_ability
+    const abilityIndex = this.character.class.spellcasting?.spellcasting_ability
       .index as keyof ICharacterAbilities | undefined;
     if (!abilityIndex) {
       return 0;
     }
 
-    const ability: ICharacterAbility = this.abilities[abilityIndex];
+    const ability: ICharacterAbility = this.character.abilities[abilityIndex];
     return ability.modifier;
   }
 
-  private calculateDamage(
-    attackType: WeaponRange | 'SPELL',
-    spell: Spell
-  ): number {
+  private calculateDamage(attackType: WeaponRange | 'SPELL'): number {
     // Calculate the damage based on the equipment type and other factors
     const calculate = (weaponDamage: Maybe<Damage> | undefined) => {
       if (!weaponDamage) {
@@ -219,7 +223,7 @@ export class CombatTarget implements ICombatTargetProperties {
     };
 
     let damage = 0;
-    const { melees, ranged } = this.equipement;
+    const { melees, ranged } = this.character.equipement;
 
     if (attackType === WeaponRange.Melee) {
       // Calculate melee damage

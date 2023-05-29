@@ -3,6 +3,7 @@ import { Grid } from '@mui/material';
 import clsx from 'clsx';
 import { Route, Routes } from 'react-router-dom';
 import styles from './App.module.scss';
+import { Duel } from './Combat';
 import { Hero } from './Hero';
 import { ResponsiveAppBar } from './ResponsiveAppBar';
 import { Shop } from './Shop';
@@ -43,6 +44,7 @@ export function App() {
           <Route path="/race/*" element={<Race />} />
           <Route path="/class/*" element={<Class />} />
           <Route path="/ability/*" element={<Ability />} />
+          <Route path="/combat/duel/:one/:two" element={<Duel />} />
         </Routes>
       </Grid>
     </Grid>

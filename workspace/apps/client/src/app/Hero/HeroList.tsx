@@ -43,7 +43,20 @@ export const HeroList: FC<IHeroListProps> = memo(
       >
         <Grid item container justifyContent="center" wrap="nowrap">
           <Button onClick={onAdd}>Add</Button>
-          <Button onClick={() => navigate('/combat')}>Combat</Button>
+          <Button
+            onClick={() => {
+              navigate(
+                '/combat/duel/' +
+                  heroRepository
+                    .all()
+                    .filter((_, index) => index < 2)
+                    .map((i) => i.index)
+                    .join('/')
+              );
+            }}
+          >
+            Duel
+          </Button>
         </Grid>
         <Grid
           item

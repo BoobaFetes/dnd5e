@@ -4,7 +4,11 @@ export class CombatEngine {
   public targets: CombatTarget[] = [];
 
   public addTargets(targets: CombatTarget[]) {
-    this.targets = targets;
+    this.targets = [...this.targets, ...targets];
+  }
+
+  public clearTargets() {
+    this.targets = [];
   }
 
   public setOrder() {
@@ -15,7 +19,7 @@ export class CombatEngine {
       const initiativeRoll = Math.floor(Math.random() * 20) + 1; // Jet de d20 pour l'initiative
       initiativeRolls.push({
         target,
-        value: initiativeRoll + target.abilities.dex.modifier,
+        value: initiativeRoll + target.character.abilities.dex.modifier,
       });
     }
 
@@ -23,6 +27,6 @@ export class CombatEngine {
     initiativeRolls.sort((a, b) => b.value - a.value);
 
     // Retourner la liste des personnages dans l'ordre de combat
-    return initiativeRolls.map((item) => item.target);
+    this.targets = initiativeRolls.map((item) => item.target);
   }
 }
