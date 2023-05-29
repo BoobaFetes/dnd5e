@@ -49,6 +49,7 @@ export const HeroList: FC<IHeroListProps> = memo(
                 '/combat/duel/' +
                   heroRepository
                     .all()
+                    .filter((character) => character.selected)
                     .filter((_, index) => index < 2)
                     .map((i) => i.index)
                     .join('/')

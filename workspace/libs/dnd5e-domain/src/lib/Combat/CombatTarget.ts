@@ -1,3 +1,4 @@
+import { cloneDeep } from 'lodash';
 import {
   ICharacter,
   ICharacterAbilities,
@@ -42,7 +43,7 @@ export class CombatTarget implements ICombatTargetProperties {
     // Convertit un objet de type IHero en instance de Character
     return new CombatTarget({
       isPlayer: true,
-      character,
+      character: cloneDeep(character),
     });
   }
 

@@ -34,7 +34,7 @@ export function App() {
         direction="column"
         flexGrow={1}
         wrap="nowrap"
-        sx={{ overflow: 'auto', paddingX: 2 }}
+        sx={{ overflow: 'auto', padding: 2 }}
         className="app-content"
       >
         <Routes>

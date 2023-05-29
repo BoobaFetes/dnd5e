@@ -4,10 +4,10 @@ import {
   CombatTarget,
   DamageObserver,
 } from '@boobafetes/dnd5e-domain';
-import { Button, Grid, Typography } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import { FC, memo, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { HeroImage } from '../../Hero/HeroImage';
+import { Attacker } from '../Attacker';
 
 const defaultHeroRepository = new HeroRepository();
 interface IDuelProps {
@@ -16,10 +16,12 @@ interface IDuelProps {
 export const Duel: FC<IDuelProps> = memo(
   ({ heroRepository = defaultHeroRepository }) => {
     const params = useParams<{ one: string; two: string }>();
-    const ref = useRef({ engine: new CombatEngine() });
-
-    const [one, setOne] = useState<CombatTarget>(null);
-    const [two, setTwo] = useState<CombatTarget>(null);
+    const ref = useRef([
+      heroRepository.get(params.one),
+      heroRepository.get(params.two),
+    ]);
+    const [attackerIndex, setAttackerIndex] = useState<number>(null);
+    const [engine] = useState(new CombatEngine());
     const [messages, setMessages] = useState<string[]>([]);
 
     useEffect(() => {
@@ -35,12 +37,16 @@ export const Duel: FC<IDuelProps> = memo(
         ) {
           const msg = success
             ? [
+                '',
                 `${hero.character.name}: hit ${target.character.name}`,
-                `    ${target.character.name} take ${damage} ${
+                `${hero.character.name}: give ${damage} ${
                   isCriticalHit ? 'critical ' : ''
-                }damage(s) [${attackType}]`,
+                } ${attackType.toLocaleLowerCase()} damage(s) to ${
+                  target.character.name
+                }`,
               ]
             : [
+                '',
                 `${hero.character.name}: miss ${
                   isCriticalMiss ? 'really ' : ''
                 }${target.character.name}`,
@@ -51,55 +57,61 @@ export const Duel: FC<IDuelProps> = memo(
         characterDied(hero, killer) {
           setMessages((prev) => [
             `${killer.character.name} has killed ${hero.character.name}`,
+            `${killer.character.name} has win the combat !!!`,
             ...prev,
           ]);
           hero.detachAllAttackObservers();
         },
       };
 
-      const _one = CombatTarget.convertFromCharacter(
-        heroRepository.get(params.one)
-      );
-      const _oneDetachAttackObserver =
-        _one.attachAttackObserver(damageObserver);
+      const attackObservers: Array<() => void> = [];
+      const targets: CombatTarget[] = [];
+      ref.current.forEach((character) => {
+        const current = CombatTarget.convertFromCharacter(character);
+        targets.push(current);
+        attackObservers.push(current.attachAttackObserver(damageObserver));
+      });
 
-      const _two = CombatTarget.convertFromCharacter(
-        heroRepository.get(params.two)
-      );
-      const _twoDetachAttackObserver =
-        _two.attachAttackObserver(damageObserver);
-
-      ref.current.engine.addTargets([_one, _two]);
-      ref.current.engine.setOrder();
-
-      setOne(_one);
-      setTwo(_two);
-
+      engine.addTargets(targets);
+      engine.setOrder();
+      setAttackerIndex(0);
       return () => {
-        _oneDetachAttackObserver();
-        _twoDetachAttackObserver();
-        ref.current.engine.clearTargets();
+        attackObservers.forEach((obs) => obs());
+        engine.clearTargets();
       };
-    }, [params, heroRepository]);
+    }, [params, heroRepository, engine]);
 
-    return !one || !two ? null : (
-      <Grid container wrap="nowrap">
-        <Grid item container xs={5} direction="column">
-          <HeroImage src={one.character.image} />
-          <Typography>{one.character.name}</Typography>
+    return attackerIndex === null ? null : (
+      <Grid container direction="column" wrap="nowrap">
+        <Grid item container spacing={4}>
+          <Grid item xs={6}>
+            <Attacker
+              engine={engine}
+              index={0}
+              characters={ref.current}
+              targetIndex={1}
+              canDoAction={attackerIndex === 0}
+              hasAttacked={() => {
+                setAttackerIndex(1);
+              }}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <Attacker
+              engine={engine}
+              index={1}
+              characters={ref.current}
+              targetIndex={0}
+              canDoAction={attackerIndex === 1}
+              hasAttacked={() => {
+                setAttackerIndex(0);
+              }}
+            />
+          </Grid>
         </Grid>
-        <Grid item container xs={2}>
-          <Button onClick={() => console.log('btn attack pressed')}>
-            Attack
-          </Button>
-        </Grid>
-        <Grid item container xs={5} direction="column">
-          <HeroImage src={two.character.image} />
-          <Typography>{two.character.name}</Typography>
-        </Grid>
-        <Grid item xs={12} container direction="column">
+        <Grid item container direction="column">
           {messages.map((msg) => (
-            <div>{msg}</div>
+            <Box sx={{ minHeight: 10 }}>{msg}</Box>
           ))}
         </Grid>
       </Grid>

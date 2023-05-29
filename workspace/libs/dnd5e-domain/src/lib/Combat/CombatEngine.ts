@@ -7,6 +7,15 @@ export class CombatEngine {
     this.targets = [...this.targets, ...targets];
   }
 
+  public removeTarget(target: CombatTarget) {
+    const index = this.targets.findIndex(
+      (ct) => ct.character.index === target.character.index
+    );
+    if (index >= 0) {
+      this.targets.splice(index, 1);
+    }
+  }
+
   public clearTargets() {
     this.targets = [];
   }
