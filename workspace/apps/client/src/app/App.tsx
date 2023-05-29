@@ -1,4 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { Home } from '@mui/icons-material';
 import { Grid } from '@mui/material';
 import clsx from 'clsx';
 import { Route, Routes } from 'react-router-dom';
@@ -38,7 +39,7 @@ export function App() {
         className="app-content"
       >
         <Routes>
-          <Route path="/" element={null} />
+          <Route path="/" element={<Home />} />
           <Route path="/hero/*" element={<Hero />} />
           <Route path="/shop/*" element={<Shop />} />
           <Route path="/race/*" element={<Race />} />
