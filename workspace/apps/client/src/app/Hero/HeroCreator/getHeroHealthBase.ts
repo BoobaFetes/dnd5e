@@ -20,5 +20,7 @@ export function getHeroHealthBase(
   conValue: ICharacterAbility,
   level = 1
 ) {
-  return (healtDiceByClassIndex[classIndex] + conValue.modifier) * level;
+  return classIndex
+    ? 0
+    : (healtDiceByClassIndex[classIndex] + conValue.modifier) * level;
 }

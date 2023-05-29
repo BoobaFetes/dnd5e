@@ -114,17 +114,17 @@ export function useNewHero({
     },
     [hero.abilities, hero.class.index, remainingAbilityPoints]
   );
-  const abilitiesRandmize = useCallback(() => {
+  const abilitiesRandomize = useCallback(() => {
     setHero((current) => {
       const abilities: ICharacterAbilities = randomizeAbilityScrores();
       setRemainingAbilityPoints(0);
       return {
         ...current,
         abilities,
-        health: getHeroHealthBase(hero.class.index, abilities.con),
+        health: getHeroHealthBase(current.class.index, abilities.con),
       };
     });
-  }, [hero.class.index]);
+  }, []);
 
   const setImage = useCallback((image: string) => {
     setHero((current) => {
@@ -171,9 +171,9 @@ export function useNewHero({
 
       setHero(makeCharacter({ image: currentImage.src }));
       setRandomName();
-      abilitiesRandmize();
       setRace(races[raceIndex].index);
       setClass(classes[classIndex].index);
+      abilitiesRandomize();
     }
   }, [
     loading,
@@ -182,9 +182,20 @@ export function useNewHero({
     setClass,
     setRace,
     setRandomName,
-    abilitiesRandmize,
+    abilitiesRandomize,
     currentImage.src,
   ]);
+
+  const validate = useCallback(() => {
+    const { race, class: classe, image, name } = hero;
+    return (
+      race?.index &&
+      classe?.index &&
+      image &&
+      name &&
+      remainingAbilityPoints === 0
+    );
+  }, [hero, remainingAbilityPoints]);
 
   return {
     hero,
@@ -196,7 +207,7 @@ export function useNewHero({
     abilities: {
       minus: abilityMinus,
       plus: abilityPlus,
-      randomize: abilitiesRandmize,
+      randomize: abilitiesRandomize,
       remainingPoints: remainingAbilityPoints,
     },
     previousImage() {
@@ -205,8 +216,9 @@ export function useNewHero({
     nextImage() {
       setImage(nextImage().src);
     },
+    validate,
     save() {
-      if (heroRepository.add(hero)) {
+      if (validate() && heroRepository.add(hero)) {
         navigate(`/hero`);
       }
     },

@@ -40,6 +40,7 @@ export const HeroCreator: FC = memo(() => {
     setName,
     setRace,
     setRandomName,
+    validate,
     save,
   } = useNewHero({
     races,
@@ -195,7 +196,9 @@ export const HeroCreator: FC = memo(() => {
         </Grid>
       </Grid>
       <Grid item container sx={{ padding: 2 }} alignItems="flex-end">
-        <Button onClick={save}>Save</Button>
+        <Button disabled={!validate()} onClick={save}>
+          Save
+        </Button>
       </Grid>
     </Grid>
   );
