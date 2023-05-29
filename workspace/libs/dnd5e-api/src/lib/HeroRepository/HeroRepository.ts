@@ -13,7 +13,6 @@ export class HeroRepository {
 
   constructor(stage: Storage = window.localStorage) {
     this.storage = stage;
-    this.list = JSON.parse(this.storage.getItem(this.key) || '[]');
   }
 
   public subscribe(observer: Observer) {
@@ -29,11 +28,15 @@ export class HeroRepository {
     return unsubscriber;
   }
 
-  private list: ICharacter[];
+  private get list(): ICharacter[] {
+    const _list: ICharacter[] = JSON.parse(
+      this.storage.getItem(this.key) || '[]'
+    );
+    return _list;
+  }
 
   private save(heroes: ICharacter[]) {
     this.storage.setItem(this.key, JSON.stringify(heroes));
-    this.list = heroes;
     this.observers.forEach((obs) => obs(this.list, this));
   }
 
