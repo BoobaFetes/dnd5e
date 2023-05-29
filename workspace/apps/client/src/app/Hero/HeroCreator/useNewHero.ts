@@ -37,10 +37,11 @@ export function useNewHero({
   heroRepository = defaultHeroRepository,
 }: IUseNewHeroOptions) {
   const navigate = useNavigate();
-  const [hero, setHero] = useState<ICharacter>(makeCharacter());
-  const [remainingAbilityPoints, setRemainingAbilityPoints] = useState(0);
-
   const { nextImage, currentImage, previousImage } = useHeroImage();
+  const [hero, setHero] = useState<ICharacter>(
+    makeCharacter({ image: currentImage.src })
+  );
+  const [remainingAbilityPoints, setRemainingAbilityPoints] = useState(0);
 
   // define actions
   const setName = useCallback((name: string) => {
@@ -169,7 +170,6 @@ export function useNewHero({
       const classIndex = Math.floor(Math.random() * classes.length);
       const raceIndex = Math.floor(Math.random() * races.length);
 
-      setHero(makeCharacter({ image: currentImage.src }));
       setRandomName();
       setRace(races[raceIndex].index);
       setClass(classes[classIndex].index);
@@ -183,7 +183,6 @@ export function useNewHero({
     setRace,
     setRandomName,
     abilitiesRandomize,
-    currentImage.src,
   ]);
 
   const validate = useCallback(() => {
