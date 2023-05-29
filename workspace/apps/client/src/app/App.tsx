@@ -1,11 +1,11 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Home } from '@mui/icons-material';
 import { Grid } from '@mui/material';
 import clsx from 'clsx';
 import { Route, Routes } from 'react-router-dom';
 import styles from './App.module.scss';
 import { Duel } from './Combat';
 import { Hero } from './Hero';
+import { Home } from './Home';
 import { ResponsiveAppBar } from './ResponsiveAppBar';
 import { Shop } from './Shop';
 import { Ability, Class, Race } from './references';
