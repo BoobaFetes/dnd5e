@@ -10,17 +10,20 @@ import {
   Weapon,
   WeaponRange,
 } from '@boobafetes/dnd5e-domain';
-import { Inventory } from '@mui/icons-material';
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Box,
   Button,
   Grid,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
   Typography,
 } from '@mui/material';
-import { FC, Fragment, memo, useState } from 'react';
+import { FC, memo, useState } from 'react';
 import { HeroItem } from '../Hero/HeroItem';
 import { ArmorShopItem } from './ArmorShopItem';
 import { WeaponShopItem } from './WeaponShopItem';
@@ -110,87 +113,87 @@ export const HeroShop: FC<IHeroShopProps> = memo(
           <Accordion>
             <AccordionSummary>Armors</AccordionSummary>
             <AccordionDetails>
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  flexWrap: 'nowrap',
-                }}
-              >
-                {armorsByCategory?.map(({ category, armors }) => {
-                  return (
-                    <Fragment key={category.index}>
-                      <Typography>{category.name}</Typography>
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          flexWrap: 'nowrap',
-                        }}
-                      >
-                        {armors
-                          .filter(({ str_minimum }) => {
-                            return str_minimum <= hero.abilities.str.value;
-                          })
-                          .map((armor) => {
-                            const isOwned = !!hero.equipement.armors.find(
-                              (a) => a.index === armor.index
-                            );
-                            return (
+              <Table sx={{ tableLayout: 'fixed' }} size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Name</TableCell>
+                    <TableCell>Category</TableCell>
+                    <TableCell align="center">Details</TableCell>
+                    <TableCell align="right">Price</TableCell>
+                    <TableCell></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {armorsByCategory?.map(({ category, armors }) => {
+                    return armors
+                      .filter(({ str_minimum }) => {
+                        return str_minimum <= hero.abilities.str.value;
+                      })
+                      .map((armor) => {
+                        const isOwned = !!hero.equipement.armors.find(
+                          (a) => a.index === armor.index
+                        );
+                        const shopItem = new ArmorShopItem(hero);
+                        return (
+                          <TableRow key={armor.index}>
+                            <TableCell>
+                              <Typography>{armor.name}</Typography>
+                            </TableCell>
+                            <TableCell>
+                              <Typography variant="caption">
+                                {category.name}
+                              </Typography>
+                            </TableCell>
+                            <TableCell align="center">
+                              <Typography variant="caption">
+                                {`base ${armor.armor_class.base}`}
+                                {armor.armor_class.dex_bonus ? (
+                                  <>
+                                    <br />
+                                    {`${
+                                      armor.armor_class.max_bonus
+                                        ? `bonus max +${armor.armor_class.max_bonus}`
+                                        : 'bonus'
+                                    }`}
+                                  </>
+                                ) : (
+                                  ''
+                                )}
+                              </Typography>
+                            </TableCell>
+                            <TableCell align="right">
+                              <Typography variant="caption">{`${armor.cost.quantity} ${armor.cost.unit}`}</Typography>
+                            </TableCell>
+                            <TableCell>
                               <Button
-                                key={armor.index}
-                                sx={{ marginX: 2 }}
+                                disabled={!isOwned}
                                 onClick={() => {
-                                  const shopItem = new ArmorShopItem(hero);
-                                  let shouldSave = false;
-                                  if (isOwned) {
-                                    shouldSave = shopItem.sell(armor);
-                                  } else {
-                                    shouldSave = shopItem.buy(armor);
-                                  }
-                                  if (shouldSave) {
+                                  if (shopItem.sell(armor)) {
                                     save(shopItem.hero);
                                   }
                                 }}
                               >
-                                <div
-                                  style={{
-                                    display: 'flex',
-                                    flexWrap: 'nowrap',
-                                    alignItems: 'center',
-                                  }}
-                                >
-                                  {isOwned && (
-                                    <Inventory style={{ marginRight: 16 }} />
-                                  )}
-                                  <div
-                                    style={{
-                                      display: 'flex',
-                                      flexDirection: 'column',
-                                      flexWrap: 'nowrap',
-                                      alignItems: 'center',
-                                    }}
-                                  >
-                                    <Typography>{`${armor.name} (${armor.cost.quantity} ${armor.cost.unit})`}</Typography>
-                                    <Typography variant="caption">
-                                      {`base ${armor.armor_class.base}`}
-                                      {armor.armor_class.dex_bonus
-                                        ? ` / bonus ${
-                                            armor.armor_class.max_bonus
-                                              ? `(max +${armor.armor_class.max_bonus})`
-                                              : ''
-                                          }`
-                                        : ''}
-                                    </Typography>
-                                  </div>
-                                </div>
+                                Sell
                               </Button>
-                            );
-                          })}
-                      </Box>
-                    </Fragment>
-                  );
-                })}
-              </Box>
+                              <Button
+                                disabled={
+                                  isOwned || hero.gold < armor.cost.quantity
+                                }
+                                onClick={() => {
+                                  if (shopItem.buy(armor)) {
+                                    save(shopItem.hero);
+                                  }
+                                }}
+                              >
+                                Buy
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      });
+                  })}
+                </TableBody>
+              </Table>
             </AccordionDetails>
           </Accordion>
           <Typography></Typography>
@@ -199,92 +202,75 @@ export const HeroShop: FC<IHeroShopProps> = memo(
           <Accordion>
             <AccordionSummary>Weapons</AccordionSummary>
             <AccordionDetails>
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  flexWrap: 'nowrap',
-                }}
-              >
-                {weaponsByCategory?.map(({ category, melee, ranged }) => {
-                  return (
-                    <Fragment key={category.index}>
-                      <Accordion>
-                        <AccordionSummary>
-                          <Typography>{category.name}</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                          <Grid container>
-                            {[...melee, ...ranged].map((weapon) => {
-                              const isOwned =
-                                hero.equipement.ranged?.index ===
-                                  weapon.index ||
-                                !!hero.equipement.melees.find(
-                                  (a) => a.index === weapon.index
-                                );
-                              return (
-                                <Grid
-                                  key={weapon.index}
-                                  item
-                                  container
-                                  xs={12}
-                                  md={3}
-                                  flexWrap="nowrap"
-                                >
-                                  <Button
-                                    sx={{ marginX: 2 }}
-                                    onClick={() => {
-                                      const shopItem = new WeaponShopItem(hero);
-                                      let shouldSave = false;
-                                      if (isOwned) {
-                                        shouldSave = shopItem.sell(weapon);
-                                      } else {
-                                        shouldSave = shopItem.buy(weapon);
-                                      }
-                                      if (shouldSave) {
-                                        save(shopItem.hero);
-                                      }
-                                    }}
-                                  >
-                                    <div
-                                      style={{
-                                        display: 'flex',
-                                        flexWrap: 'nowrap',
-                                        alignItems: 'center',
-                                      }}
-                                    >
-                                      {isOwned && (
-                                        <Inventory
-                                          style={{ marginRight: 16 }}
-                                        />
-                                      )}
-                                      <div
-                                        style={{
-                                          display: 'flex',
-                                          flexDirection: 'column',
-                                          flexWrap: 'nowrap',
-                                          alignItems: 'center',
-                                        }}
-                                      >
-                                        <Typography>{`${weapon.name} (${weapon.cost.quantity} ${weapon.cost.unit})`}</Typography>
-                                        <Typography variant="caption">
-                                          {`${weapon.damage?.damage_dice}`}
-                                          {weapon.two_handed_damage &&
-                                            `(${weapon.two_handed_damage.damage_dice})`}
-                                        </Typography>
-                                      </div>
-                                    </div>
-                                  </Button>
-                                </Grid>
-                              );
-                            })}
-                          </Grid>
-                        </AccordionDetails>
-                      </Accordion>
-                    </Fragment>
-                  );
-                })}
-              </Box>
+              <Table sx={{ tableLayout: 'fixed' }} size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Name</TableCell>
+                    <TableCell>Category</TableCell>
+                    <TableCell align="center">Details</TableCell>
+                    <TableCell align="right">Price</TableCell>
+                    <TableCell></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {weaponsByCategory?.map(({ category, melee, ranged }) => {
+                    return [...melee, ...ranged].map((weapon) => {
+                      const isOwned =
+                        hero.equipement.ranged?.index === weapon.index ||
+                        !!hero.equipement.melees.find(
+                          (a) => a.index === weapon.index
+                        );
+                      const shopItem = new WeaponShopItem(hero);
+                      return (
+                        <TableRow key={weapon.index}>
+                          <TableCell>
+                            <Typography>{weapon.name}</Typography>
+                          </TableCell>
+                          <TableCell>
+                            <Typography variant="caption">
+                              {category.name}
+                            </Typography>
+                          </TableCell>
+                          <TableCell align="center">
+                            <Typography variant="caption">
+                              {`${weapon.damage?.damage_dice}`}
+                              {weapon.two_handed_damage &&
+                                ` (${weapon.two_handed_damage.damage_dice})`}
+                            </Typography>
+                          </TableCell>
+                          <TableCell align="right">
+                            <Typography variant="caption">{`${weapon.cost.quantity} ${weapon.cost.unit}`}</Typography>
+                          </TableCell>
+                          <TableCell>
+                            <Button
+                              disabled={!isOwned}
+                              onClick={() => {
+                                if (shopItem.sell(weapon)) {
+                                  save(shopItem.hero);
+                                }
+                              }}
+                            >
+                              Sell
+                            </Button>
+                            <Button
+                              disabled={
+                                isOwned || hero.gold < weapon.cost.quantity
+                              }
+                              onClick={() => {
+                                if (shopItem.buy(weapon)) {
+                                  save(shopItem.hero);
+                                }
+                              }}
+                            >
+                              Buy
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    });
+                  })}
+                </TableBody>
+              </Table>
             </AccordionDetails>
           </Accordion>
           <Typography></Typography>
