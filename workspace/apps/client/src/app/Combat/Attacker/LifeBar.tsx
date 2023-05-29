@@ -40,7 +40,9 @@ export const LifeBar: FC<ILifeBarProps> = ({ value, maxValue }) => {
       </Box>
     </Box>
   ) : (
-    <Typography color="error">Mort</Typography>
+    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+      <Typography color="error">Mort</Typography>
+    </Box>
   );
 };
 
