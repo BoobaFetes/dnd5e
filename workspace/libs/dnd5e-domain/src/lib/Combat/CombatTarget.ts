@@ -4,6 +4,7 @@ import {
   ICharacterAbilities,
   ICharacterAbility,
 } from '../Character';
+import { Dice } from '../Dice';
 import { Damage, Maybe, WeaponRange } from '../dto';
 import { DamageObserver } from './DamageObserver';
 import { ICombatTargetProperties } from './ICombatTargetProperties';
@@ -209,7 +210,9 @@ export class CombatTarget implements ICombatTargetProperties {
     // Calculate the damage based on the equipment type and other factors
     const calculate = (weaponDamage: Maybe<Damage> | undefined) => {
       if (!weaponDamage) {
-        return 0;
+        // ARO : la seule modification de ma part
+        // (mise à part réordonnancement et import de code depuisles prompts !)
+        return new Dice('1d3').roll();
       }
       const [diceCount, diceFacesCount] = weaponDamage.damage_dice
         .split('d')
