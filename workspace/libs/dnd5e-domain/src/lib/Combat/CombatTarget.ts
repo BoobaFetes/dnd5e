@@ -232,8 +232,9 @@ export class CombatTarget implements ICombatTargetProperties {
     if (attackType === WeaponRange.Melee) {
       // Calculate melee damage
       // calculer les dégats des armes de mêlée sans oublier que certaine arme peuvent être prise à 1 et 2 mains
-      if (melees.length == 1 && melees[0].two_handed_damage) {
-        damage = calculate(melees[0].two_handed_damage);
+      const doubleHandWeapon = melees.find((w) => !!w.two_handed_damage);
+      if (doubleHandWeapon) {
+        damage = calculate(doubleHandWeapon.two_handed_damage);
       } else {
         damage = melees.reduce((mem, weapon) => {
           mem += calculate(weapon.damage);
