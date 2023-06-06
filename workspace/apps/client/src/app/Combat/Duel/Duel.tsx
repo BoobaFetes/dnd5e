@@ -29,21 +29,35 @@ export const Duel: FC<IDuelProps> = memo(
         attackResult(
           hero,
           target,
-          success,
-          attackType,
-          damage,
-          isCriticalHit,
-          isCriticalMiss
+          {
+            attackResult,
+            attackModifiers,
+            attackRoll,
+            attackType,
+            damage,
+            isCriticalHit,
+            isCriticalMiss,
+            useFinesse,
+            useTwoHands,
+            weapons,
+          }
         ) {
-          const msg = success
+          const msg = attackResult
             ? [
                 '',
-                `${hero.character.name}: hit ${target.character.name}`,
+                `${hero.character.name}: hit ${target.character.name} with ${
+                  useTwoHands ? '1 hand' : '2 hands'
+                }`,
                 `${hero.character.name}: give ${damage} ${
                   isCriticalHit ? 'critical ' : ''
-                } ${attackType.toLocaleLowerCase()} damage(s) to ${
+                } damage(s) of type ${attackType.toLocaleLowerCase()} to ${
                   target.character.name
                 }`,
+                `${
+                  hero.character.name
+                }: stats : roll: ${attackRoll} / modifier:${attackModifiers} / finesse:${useFinesse} / weapons:${weapons.join(
+                  ', '
+                )}`,
               ]
             : [
                 '',
@@ -110,8 +124,10 @@ export const Duel: FC<IDuelProps> = memo(
           </Grid>
         </Grid>
         <Grid item container direction="column">
-          {messages.map((msg) => (
-            <Box sx={{ minHeight: 10 }}>{msg}</Box>
+          {messages.map((msg, index) => (
+            <Box key={index} sx={{ minHeight: 10 }}>
+              {msg}
+            </Box>
           ))}
         </Grid>
       </Grid>

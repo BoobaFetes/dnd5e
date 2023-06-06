@@ -7,6 +7,7 @@ import {
 import { Dice } from '../Dice';
 import { Damage, Maybe, WeaponRange } from '../dto';
 import { DamageObserver } from './DamageObserver';
+import { IAttackProperties, makeAttackProperties } from './IAttackProperties';
 import { ICombatTargetProperties } from './ICombatTargetProperties';
 
 export class CombatTarget implements ICombatTargetProperties {
@@ -61,38 +62,27 @@ export class CombatTarget implements ICombatTargetProperties {
     attackType: WeaponRange | 'SPELL'
   ): boolean {
     const attackRoll = this.rollAttack();
-    const modifiers = this.getAttackModifiers(attackType);
-    const attackResult =
+    const properties: IAttackProperties = makeAttackProperties({
+      attackType,
+      attackRoll,
+      isCriticalHit: attackRoll === 20,
+      isCriticalMiss: attackRoll === 1,
+    });
+    const modifiers = this.getAttackModifiers(properties);
+    properties.attackResult =
       attackRoll === 1 ? false : attackRoll + modifiers >= target.armorClass;
 
-    if (attackResult) {
-      const damage = this.calculateDamage(attackType);
-      const isCriticalHit = attackRoll === 20;
+    if (properties.attackResult) {
+      const damage = this.calculateDamage(properties);
       target.takeDamage(damage);
 
       // Notify observers
-      this.notifyAttackObservers(
-        target,
-        true,
-        attackType,
-        damage,
-        isCriticalHit,
-        false
-      );
+      this.notifyAttackObservers(target, properties);
 
       console.log(`${this.character.name} a réussi son attaque !`);
     } else {
-      const isCriticalMiss = attackRoll === 1;
-
       // Notify observers
-      this.notifyAttackObservers(
-        target,
-        false,
-        attackType,
-        0,
-        false,
-        isCriticalMiss
-      );
+      this.notifyAttackObservers(target, properties);
 
       console.log(`${this.character.name} a raté son attaque.`);
     }
@@ -103,7 +93,7 @@ export class CombatTarget implements ICombatTargetProperties {
       // Notify observers
       target.notifyDeathObservers(this);
     }
-    return attackResult;
+    return properties.attackResult;
   }
 
   public takeDamage(damage: number): void {
@@ -128,22 +118,10 @@ export class CombatTarget implements ICombatTargetProperties {
 
   private notifyAttackObservers(
     target: CombatTarget,
-    success: boolean,
-    attackType: WeaponRange | 'SPELL',
-    damage: number,
-    isCriticalHit: boolean,
-    isCriticalMiss: boolean
+    properties: IAttackProperties
   ): void {
     for (const observer of this.attackObservers) {
-      observer.attackResult(
-        this,
-        target,
-        success,
-        attackType,
-        damage,
-        isCriticalHit,
-        isCriticalMiss
-      );
+      observer.attackResult(this, target, properties);
     }
   }
 
@@ -162,29 +140,31 @@ export class CombatTarget implements ICombatTargetProperties {
     return Math.floor(Math.random() * count) + 1;
   }
 
-  private getAttackModifiers(attackType: WeaponRange | 'SPELL'): number {
+  private getAttackModifiers(properties: IAttackProperties): number {
     // Apply appropriate attack modifiers based on the equipment type
     let modifiers = 0;
-    if (attackType === WeaponRange.Melee) {
+    if (properties.attackType === WeaponRange.Melee) {
       const { dex, str } = this.character.abilities;
       const hasFinesse = () =>
         this.character.equipement.melees[0]?.properties.findIndex(
           (i) => i.index === 'finesse'
         ) >= 0;
 
-      if (dex.value >= str.value && hasFinesse()) {
+      properties.useFinesse = dex.value >= str.value && hasFinesse();
+      if (properties.useFinesse) {
         modifiers += this.dexterityModifier();
       } else {
         modifiers += this.strengthModifier();
       }
       // Apply any other melee attack modifiers
-    } else if (attackType === WeaponRange.Ranged) {
+    } else if (properties.attackType === WeaponRange.Ranged) {
       modifiers += this.dexterityModifier();
       // Apply any other ranged attack modifiers
-    } else if (attackType === 'SPELL') {
+    } else if (properties.attackType === 'SPELL') {
       modifiers += this.spellcastingModifier();
       // Apply any other spell attack modifiers
     }
+    properties.attackModifiers = modifiers;
     return modifiers;
   }
 
@@ -216,7 +196,7 @@ export class CombatTarget implements ICombatTargetProperties {
     return ability.modifier;
   }
 
-  private calculateDamage(attackType: WeaponRange | 'SPELL'): number {
+  private calculateDamage(properties: IAttackProperties): number {
     // Calculate the damage based on the equipment type and other factors
     const calculate = (weaponDamage: Maybe<Damage> | undefined) => {
       if (!weaponDamage) {
@@ -239,26 +219,28 @@ export class CombatTarget implements ICombatTargetProperties {
     let damage = 0;
     const { melees, ranged } = this.character.equipement;
 
-    if (attackType === WeaponRange.Melee) {
+    if (properties.attackType === WeaponRange.Melee) {
       // Calculate melee damage
       // calculer les dégats des armes de mêlée sans oublier que certaine arme peuvent être prise à 1 et 2 mains
       const doubleHandWeapon = melees.find((w) => !!w.two_handed_damage);
       if (doubleHandWeapon) {
+        properties.useTwoHands = true;
         damage = calculate(doubleHandWeapon.two_handed_damage);
       } else {
-        damage = melees.reduce((mem, weapon) => {
-          mem += calculate(weapon.damage);
-          return mem;
-        }, damage);
+        melees.forEach((weapon) => {
+          damage += calculate(weapon.damage);
+        });
       }
-    } else if (attackType === WeaponRange.Ranged) {
+    } else if (properties.attackType === WeaponRange.Ranged) {
       // Calculate ranged damage
 
       damage = calculate(ranged?.damage);
-    } else if (attackType === 'SPELL') {
+    } else if (properties.attackType === 'SPELL') {
       // Calculate spell damage
       throw "comment on calcul les sorts ? on dirait qu'il y a un type Spell.SpellDamage assez spécifique...";
     }
+
+    properties.damage = damage;
     return damage;
   }
 
