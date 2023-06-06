@@ -166,7 +166,17 @@ export class CombatTarget implements ICombatTargetProperties {
     // Apply appropriate attack modifiers based on the equipment type
     let modifiers = 0;
     if (attackType === WeaponRange.Melee) {
-      modifiers += this.strengthModifier();
+      const { dex, str } = this.character.abilities;
+      const hasFinesse = () =>
+        this.character.equipement.melees[0]?.properties.findIndex(
+          (i) => i.index === 'finesse'
+        ) >= 0;
+
+      if (dex.value >= str.value && hasFinesse()) {
+        modifiers += this.dexterityModifier();
+      } else {
+        modifiers += this.strengthModifier();
+      }
       // Apply any other melee attack modifiers
     } else if (attackType === WeaponRange.Ranged) {
       modifiers += this.dexterityModifier();

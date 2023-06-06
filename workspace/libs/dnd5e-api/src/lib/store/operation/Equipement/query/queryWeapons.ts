@@ -6,7 +6,7 @@ export type WeaponsResult = {
 };
 
 export const queryWeapons = gql`
-  query Weapons {
+  query {
     weapons: equipments(equipment_category: "weapon", order: { by: NAME }) {
       index
       name
@@ -16,14 +16,7 @@ export const queryWeapons = gql`
       }
       desc
       weight
-      equipment_category {
-        index
-        name
-      }
       ... on Weapon {
-        index
-        name
-        weight
         damage {
           damage_dice
           damage_type {
@@ -43,6 +36,11 @@ export const queryWeapons = gql`
           name
         }
         weapon_range
+        properties {
+          index
+          name
+          desc
+        }
       }
     }
   }
