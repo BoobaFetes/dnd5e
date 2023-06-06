@@ -155,6 +155,7 @@ export function useNewHero({
         return {
           ...current,
           class: classe,
+          health: getHeroHealthBase(classe.index, current.abilities.con),
           gold: !classe.index
             ? 0
             : new Dice(getGoldDiceByClassIndex(classe.index)).roll() * 10,
