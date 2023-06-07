@@ -113,15 +113,22 @@ export const HeroItem: FC<IHeroItemProps> = memo(({ hero }) => {
             {[...hero.equipement.melees, hero.equipement.ranged]
               .filter((i) => !!i)
               .map(
-                ({
-                  index,
-                  name,
-                  weapon_category,
-                  damage,
-                  two_handed_damage,
-                }) => {
+                (
+                  {
+                    index,
+                    name,
+                    weapon_category,
+                    damage,
+                    two_handed_damage,
+                    properties,
+                  },
+                  rIndex
+                ) => {
+                  const useTwoHandsOnly = !!properties.find(
+                    (e) => e.index === 'two-handed'
+                  );
                   return (
-                    <TableRow key={index}>
+                    <TableRow key={rIndex}>
                       <TableCell>
                         <Typography variant="caption">{name}</Typography>
                       </TableCell>
@@ -135,6 +142,7 @@ export const HeroItem: FC<IHeroItemProps> = memo(({ hero }) => {
                           {`${damage?.damage_dice}`}
                           {two_handed_damage &&
                             ` (${two_handed_damage.damage_dice})`}
+                          {useTwoHandsOnly && ' - 2 hands only'}
                         </Typography>
                       </TableCell>
                     </TableRow>
