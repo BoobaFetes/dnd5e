@@ -226,14 +226,17 @@ export class CombatTarget implements ICombatTargetProperties {
       if (doubleHandWeapon) {
         properties.useTwoHands = true;
         damage = calculate(doubleHandWeapon.two_handed_damage);
+        properties.weapons = [doubleHandWeapon.name];
       } else {
+        properties.weapons = [];
         melees.forEach((weapon) => {
           damage += calculate(weapon.damage);
+          properties.weapons.push(weapon.name);
         });
       }
     } else if (properties.attackType === WeaponRange.Ranged) {
       // Calculate ranged damage
-
+      properties.weapons = [ranged?.name || ''];
       damage = calculate(ranged?.damage);
     } else if (properties.attackType === 'SPELL') {
       // Calculate spell damage
