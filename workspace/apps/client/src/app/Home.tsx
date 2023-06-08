@@ -126,10 +126,32 @@ const aideSection: Array<{ title: ReactNode; body: ReactNode }> = [
               </Typography>
             </li>
             <li>
+              <Typography>une icone en forme de cheval apparait</Typography>
+            </li>
+            <li>
               <Typography>
-                attention, seul les deux premier hero selectionné participe au
-                combat, n'oubliez pas de deselectionner ceux qui ne prendrons
-                pas part au combat
+                le bouton Select s'est transformer en un bouton Unselect pour
+                retirer le hero des combattants
+              </Typography>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <Typography>
+            attention, seul les deux premiers heros selectionnés participent au
+            combat
+          </Typography>
+          <ul>
+            <li>
+              <Typography>
+                n'oubliez pas de ne selectionner que les deux que vous souhaitez
+                voir combattre
+              </Typography>
+            </li>
+            <li>
+              <Typography>
+                n'oubliez pas de leur donner un équipement, sinon vous risquez
+                fort ne vous ennuyer !
               </Typography>
             </li>
           </ul>
