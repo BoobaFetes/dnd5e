@@ -1,10 +1,186 @@
-import { FC, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Grid,
+  Typography,
+} from '@mui/material';
+import { FC, ReactNode } from 'react';
 
 export const Home: FC = () => {
-  const navigate = useNavigate();
-  useEffect(() => {
-    navigate('/hero');
-  });
-  return null;
+  return (
+    <Grid container spacing={1}>
+      <Grid item container direction="column">
+        <Accordion>
+          <AccordionSummary>
+            <Typography variant="h4"> Aide rapide </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            {aideSection.map(({ title, body }, index) => (
+              <Accordion key={index}>
+                <AccordionSummary>{title}</AccordionSummary>
+                <AccordionDetails>{body}</AccordionDetails>
+              </Accordion>
+            ))}
+          </AccordionDetails>
+        </Accordion>
+      </Grid>
+    </Grid>
+  );
 };
+
+const aideSection: Array<{ title: ReactNode; body: ReactNode }> = [
+  {
+    title: <Typography variant="h6">Comment créer un personnage ?</Typography>,
+    body: (
+      <ul>
+        <li>
+          <Typography>
+            cliquez sur le menu Hero, vous serez dirigez vers la liste de vos
+            héros créés
+          </Typography>
+        </li>
+        <li>
+          <Typography>cliquez sur le bouton Add </Typography>
+        </li>
+        <li>
+          <Typography>un personnage est généré aléatoirement</Typography>
+        </li>
+        <li>
+          <Typography>vous pouvez le personnaliser </Typography>
+        </li>
+        <li>
+          <Typography>
+            une fois satisfait du résultat cliquez sur le bouton Save en bas de
+            page
+          </Typography>
+        </li>
+        <li>
+          <Typography>vous serez dirigez vers la liste de vos héros</Typography>
+        </li>
+        <li>
+          <Typography>votre nouvel héro apparait dans la liste</Typography>
+        </li>
+      </ul>
+    ),
+  },
+  {
+    title: (
+      <Typography variant="h6">Comment équiper un personnage ?</Typography>
+    ),
+    body: (
+      <ul>
+        <li>
+          <Typography>
+            cliquez sur le menu Hero, vous serez dirigez vers la liste de vos
+            héros créés
+          </Typography>
+        </li>
+        <li>
+          <Typography>
+            cliquez sur le héro que vous désirez équiper, la fiche du personnage
+            apparaît
+          </Typography>
+        </li>
+        <li>
+          <Typography>
+            Dans la liste du personnage, cliquez sur shopping
+          </Typography>
+        </li>
+        <li>
+          <Typography>vous serez dirigez vers le magasin</Typography>
+        </li>
+        <li>
+          <Typography>
+            Vous pouvez acheter et revendre de l'équipement
+          </Typography>
+        </li>
+        <li>
+          <Typography>
+            Toute modification est sauvegardée immédiatement
+          </Typography>
+        </li>
+      </ul>
+    ),
+  },
+  {
+    title: <Typography variant="h6">Comment lancer un duel ?</Typography>,
+    body: (
+      <ul>
+        <li>
+          <Typography>
+            cliquez sur le menu Hero, vous serez dirigez vers la liste de vos
+            héros
+          </Typography>
+        </li>
+        <li>
+          <Typography>
+            Verifiez que les heros que vous souhaitez voir combattre possèdent
+            une icone d'un cheval, si ce n'est pas le cas :
+          </Typography>
+          <ul>
+            <li>
+              <Typography>
+                cliquez sur le bouton Select de la fiche de personnage que vous
+                souhaitez faire combattre
+              </Typography>
+            </li>
+            <li>
+              <Typography>
+                attention, seul les deux premier hero selectionné participe au
+                combat, n'oubliez pas de deselectionner ceux qui ne prendrons
+                pas part au combat
+              </Typography>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    ),
+  },
+  {
+    title: (
+      <Typography variant="h6">
+        L'application ne fonctionne pas, comme faire ?
+      </Typography>
+    ),
+    body: (
+      <ol>
+        <li>
+          <Typography>
+            Ouvrez le site web avec chrome, si le problème persiste passez à
+            l'étape suivante.
+          </Typography>
+        </li>
+        <li>
+          <Typography>
+            Rechargez l'application avec votre navigateur si le problème
+            persiste passez à l'étape suivate
+          </Typography>
+        </li>
+        <li>
+          <Typography>
+            Veuillez suivre la procédure officiel de chrome suivante :
+            <a href="https://support.google.com/accounts/answer/32050?hl=fr&co=GENIE.Platform%3DDesktop">
+              Vider le cache et supprimer les cookies
+            </a>
+          </Typography>
+          <Typography variant="caption">
+            Vous perdrez vos personnages mais vous pourrez jouer !
+          </Typography>
+        </li>
+        <li>
+          <Typography>
+            Si toute ces manoeuvres n'ont pas suffit c'est que votre serviteur a
+            fait une maladresse.
+          </Typography>
+          <Typography>
+            <a href="mailto:axel.rolandgosselin@gmail.com">
+              N'hésitez pas à me contacter afin que je puisse faire le
+              nécessaire.
+            </a>
+          </Typography>
+        </li>
+      </ol>
+    ),
+  },
+];

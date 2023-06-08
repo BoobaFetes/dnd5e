@@ -21,7 +21,7 @@ export function App() {
       <Grid item className="app-bar">
         <ResponsiveAppBar
           pages={[
-            // rien à mettre dans le home pour le moment { label: 'Home', to: '/' },
+            { label: 'Home', to: '/' },
             { label: 'Heroes', to: '/hero' },
             { label: 'Races', to: '/race' },
             { label: 'Classes', to: '/class' },

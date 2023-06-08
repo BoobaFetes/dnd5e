@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import { FC, MouseEvent, memo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import titleImg from './title.jpg';
 
 interface IPage {
   to: string;
@@ -38,9 +39,9 @@ export const ResponsiveAppBar: FC<IResponsiveAppBarProps> = memo(
         <Box sx={{ marginLeft: 1, marginRight: 1 }}>
           <Toolbar disableGutters>
             <img
-              width="100"
+              width="150"
               alt="logo de Dungeons and Dragons"
-              src="https://www.pngitem.com/pimgs/m/498-4985664_thumb-image-dungeons-and-dragons-icon-hd-png.png"
+              src={titleImg}
             />
             <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
               <IconButton
