@@ -1,4 +1,5 @@
 import { HeroRepository } from '@boobafetes/dnd5e-api';
+import { BedroomBabyOutlined } from '@mui/icons-material';
 import {
   Accordion,
   AccordionDetails,
@@ -37,7 +38,7 @@ const aideSection: Array<{ title: ReactNode; body: ReactNode }> = [
       <ul>
         <li>
           <Typography>
-            cliquez sur le menu Hero, vous serez dirigez vers la liste de vos
+            cliquez sur le menu Hero, vous serez dirigé vers la liste de vos
             héros créés
           </Typography>
         </li>
@@ -57,7 +58,7 @@ const aideSection: Array<{ title: ReactNode; body: ReactNode }> = [
           </Typography>
         </li>
         <li>
-          <Typography>vous serez dirigez vers la liste de vos héros</Typography>
+          <Typography>vous serez dirigé vers la liste de vos héros</Typography>
         </li>
         <li>
           <Typography>votre nouvel héro apparait dans la liste</Typography>
@@ -73,7 +74,7 @@ const aideSection: Array<{ title: ReactNode; body: ReactNode }> = [
       <ul>
         <li>
           <Typography>
-            cliquez sur le menu Hero, vous serez dirigez vers la liste de vos
+            cliquez sur le menu Hero, vous serez dirigé vers la liste de vos
             héros créés
           </Typography>
         </li>
@@ -89,7 +90,7 @@ const aideSection: Array<{ title: ReactNode; body: ReactNode }> = [
           </Typography>
         </li>
         <li>
-          <Typography>vous serez dirigez vers le magasin</Typography>
+          <Typography>vous serez dirigé vers le magasin</Typography>
         </li>
         <li>
           <Typography>
@@ -110,14 +111,14 @@ const aideSection: Array<{ title: ReactNode; body: ReactNode }> = [
       <ul>
         <li>
           <Typography>
-            cliquez sur le menu Hero, vous serez dirigez vers la liste de vos
+            cliquez sur le menu Hero, vous serez dirigé vers la liste de vos
             héros
           </Typography>
         </li>
         <li>
           <Typography>
             Verifiez que les heros que vous souhaitez voir combattre possèdent
-            une icone d'un cheval, si ce n'est pas le cas :
+            l'icone : <BedroomBabyOutlined />, si ce n'est pas le cas :
           </Typography>
           <ul>
             <li>
