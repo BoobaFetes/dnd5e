@@ -1,6 +1,8 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { HeroRepository } from '@boobafetes/dnd5e-api';
 import { Grid } from '@mui/material';
 import clsx from 'clsx';
+import { useErrorBoundary, withErrorBoundary } from 'react-error-boundary';
 import { Route, Routes } from 'react-router-dom';
 import styles from './App.module.scss';
 import { Duel } from './Combat';
@@ -52,4 +54,24 @@ export function App() {
   );
 }
 
-export default App;
+function ErrorFallback({ error }) {
+  const { resetBoundary } = useErrorBoundary();
+
+  return (
+    <div role="alert">
+      <p>Something went wrong:</p>
+      <pre style={{ color: 'red' }}>{error.message}</pre>
+      <button
+        onClick={() => {
+          HeroRepository.reset();
+          resetBoundary();
+        }}
+      >
+        Try again
+      </button>
+    </div>
+  );
+}
+export default withErrorBoundary(App, {
+  FallbackComponent: ErrorFallback,
+});
