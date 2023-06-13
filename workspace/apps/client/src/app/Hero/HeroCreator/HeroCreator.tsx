@@ -1,7 +1,6 @@
 import { useQueryClasses, useQueryRaces } from '@boobafetes/dnd5e-api';
 import { RefreshOutlined, ShuffleOutlined } from '@mui/icons-material';
 import {
-  Box,
   Button,
   FormControl,
   Grid,
@@ -147,50 +146,36 @@ export const HeroCreator: FC = memo(() => {
             alignItems="center"
             sx={{ marginTop: 3 }}
           >
-            <Typography>{`Health : ${hero.health}`}</Typography>
+            <Grid item container>
+              <Typography>{`Health : ${hero.health}`}</Typography>
+            </Grid>
+            <Grid item container>
+              <Typography>{`Gold : ${hero.gold}`}</Typography>
+            </Grid>
           </Grid>
         </Grid>
       </Grid>
       <Grid item container sx={{ marginTop: { xs: 4, md: 2 } }}>
-        <Grid item xs={6} sx={{ paddingRight: 0.75 }}>
-          <Paper sx={{ padding: 2 }}>
-            <FormControl fullWidth>
-              <Grid container>
-                <Grid
-                  item
-                  container
-                  alignItems="center"
-                  sx={{ paddingBottom: 1, borderBottom: '1px solid' }}
-                >
-                  <Typography sx={{ flexGrow: 1 }}>
-                    Remaining points : {abilities.remainingPoints}
-                  </Typography>
-                  <Button fullWidth={false} onClick={abilities.randomize}>
-                    <RefreshOutlined />
-                  </Button>
-                </Grid>
-                <HeroAbilities abilities={hero.abilities} action={abilities} />
+        <Paper sx={{ padding: 2 }}>
+          <FormControl fullWidth>
+            <Grid container>
+              <Grid
+                item
+                container
+                alignItems="center"
+                sx={{ paddingBottom: 1, borderBottom: '1px solid' }}
+              >
+                <Typography sx={{ flexGrow: 1 }}>
+                  Remaining points : {abilities.remainingPoints}
+                </Typography>
+                <Button fullWidth={false} onClick={abilities.randomize}>
+                  <RefreshOutlined />
+                </Button>
               </Grid>
-            </FormControl>
-          </Paper>
-        </Grid>
-        <Grid item xs={6} sx={{ paddingLeft: 0.75 }}>
-          <Paper sx={{ padding: 2, height: '100%' }}>
-            <Box
-              sx={{
-                height: 'inherit',
-                width: '50%',
-                display: 'flex',
-                flexDirection: 'column',
-                marginTop: 2,
-              }}
-            >
-              <div>
-                <Typography>{`Gold : ${hero.gold}`}</Typography>
-              </div>
-            </Box>
-          </Paper>
-        </Grid>
+              <HeroAbilities abilities={hero.abilities} action={abilities} />
+            </Grid>
+          </FormControl>
+        </Paper>
       </Grid>
       <Grid item container sx={{ padding: 2 }} alignItems="flex-end">
         <Button disabled={!validate()} onClick={save}>
