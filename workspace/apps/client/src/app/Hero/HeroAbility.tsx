@@ -13,8 +13,8 @@ export const HeroAbility: FC<
       <Grid
         item
         container
-        justifyContent="center"
-        sx={{ flexGrow: 0, width: 100 }}
+        justifyContent="flex-end"
+        sx={{ flexGrow: 0, width: 100, marginRight: !!children && 2 }}
       >
         <Typography>{`(${
           modifier > 0 ? '+' : ''
