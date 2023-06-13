@@ -14,7 +14,7 @@ export const HeroAbility: FC<
         item
         container
         justifyContent="flex-end"
-        sx={{ flexGrow: 0, width: 100, marginRight: !!children && 2 }}
+        sx={{ flexGrow: 0, width: 100, marginRight: !!children && 1 }}
       >
         <Typography>{`(${
           modifier > 0 ? '+' : ''
