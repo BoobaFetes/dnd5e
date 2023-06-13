@@ -1,4 +1,4 @@
-import { HeroRepository } from '@boobafetes/dnd5e-api';
+import { HeroRepository, HeroRepositoryClass } from '@boobafetes/dnd5e-api';
 import {
   Class,
   Dice,
@@ -19,8 +19,6 @@ import {
 } from './randomizeAbilityScrores';
 import { useHeroImage } from './useHeroImage';
 
-const defaultHeroRepository = new HeroRepository();
-
 type HeroAbility = ICharacter['abilities'];
 export type HeroAbilityKeys = keyof HeroAbility | string;
 
@@ -28,13 +26,13 @@ interface IUseNewHeroOptions {
   races: Race[];
   classes: Class[];
   loading: boolean;
-  heroRepository?: HeroRepository;
+  heroRepository?: HeroRepositoryClass;
 }
 export function useNewHero({
   races,
   classes,
   loading,
-  heroRepository = defaultHeroRepository,
+  heroRepository = HeroRepository,
 }: IUseNewHeroOptions) {
   const navigate = useNavigate();
   const { nextImage, currentImage, previousImage } = useHeroImage();

@@ -1,9 +1,10 @@
 import { ICharacter, makeCharacter } from '@boobafetes/dnd5e-domain';
 import { v4 as uuidv4 } from 'uuid';
+import { HeroRepositoryClass } from '.';
 
 type Observer = (
   heroes: ReadonlyArray<ICharacter>,
-  repository?: HeroRepository
+  repository?: HeroRepositoryClass
 ) => void;
 
 export class HeroRepository {

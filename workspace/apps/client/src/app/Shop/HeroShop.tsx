@@ -1,5 +1,6 @@
 import {
   HeroRepository,
+  HeroRepositoryClass,
   useQueryArmors,
   useQueryWeapons,
 } from '@boobafetes/dnd5e-api';
@@ -30,7 +31,7 @@ import { WeaponShopItem } from './WeaponShopItem';
 
 interface IHeroShopProps {
   index: string;
-  heroRepository?: HeroRepository;
+  heroRepository?: HeroRepositoryClass;
 }
 
 type WeaponsByCategory = {
@@ -41,7 +42,7 @@ type WeaponsByCategory = {
 type ArmorsByCategory = { category: EquipmentCategory; armors: Armor[] };
 
 export const HeroShop: FC<IHeroShopProps> = memo(
-  ({ index, heroRepository = new HeroRepository() }) => {
+  ({ index, heroRepository = HeroRepository }) => {
     const [hero, setHero] = useState<ICharacter>(heroRepository.get(index));
     const save = (hero: ICharacter) => {
       if (heroRepository.update(hero)) {

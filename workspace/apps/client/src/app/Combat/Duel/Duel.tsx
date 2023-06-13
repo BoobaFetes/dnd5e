@@ -1,4 +1,4 @@
-import { HeroRepository } from '@boobafetes/dnd5e-api';
+import { HeroRepository, HeroRepositoryClass } from '@boobafetes/dnd5e-api';
 import {
   CombatEngine,
   CombatTarget,
@@ -9,12 +9,11 @@ import { FC, memo, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Attacker } from '../Attacker';
 
-const defaultHeroRepository = new HeroRepository();
 interface IDuelProps {
-  heroRepository?: HeroRepository;
+  heroRepository?: HeroRepositoryClass;
 }
 export const Duel: FC<IDuelProps> = memo(
-  ({ heroRepository = defaultHeroRepository }) => {
+  ({ heroRepository = HeroRepository }) => {
     const params = useParams<{ one: string; two: string }>();
     const ref = useRef([
       heroRepository.get(params.one),

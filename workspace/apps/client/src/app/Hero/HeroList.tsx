@@ -1,4 +1,4 @@
-import { HeroRepository } from '@boobafetes/dnd5e-api';
+import { HeroRepository, HeroRepositoryClass } from '@boobafetes/dnd5e-api';
 import { ICharacter } from '@boobafetes/dnd5e-domain';
 import { BedroomBabyOutlined } from '@mui/icons-material';
 import {
@@ -15,10 +15,10 @@ import { useNavigate } from 'react-router-dom';
 import { HeroItem } from './HeroItem';
 
 interface IHeroListProps {
-  heroRepository?: HeroRepository;
+  heroRepository?: HeroRepositoryClass;
 }
 export const HeroList: FC<IHeroListProps> = memo(
-  ({ heroRepository = new HeroRepository() }) => {
+  ({ heroRepository = HeroRepository }) => {
     const navigate = useNavigate();
     const [heroes, setHeroes] = useState<ICharacter[]>(heroRepository.all());
 

@@ -1,3 +1,4 @@
+import { HeroRepository } from '@boobafetes/dnd5e-api';
 import {
   Accordion,
   AccordionDetails,
@@ -178,6 +179,12 @@ const aideSection: Array<{ title: ReactNode; body: ReactNode }> = [
             Rechargez l'application avec votre navigateur si le problème
             persiste passez à l'étape suivate
           </Typography>
+        </li>
+        <li>
+          <Typography>
+            cliquez sur le bouton ci-contre et rechargez l'application
+          </Typography>
+          <button onClick={() => HeroRepository.reset()}>clear session</button>
         </li>
         <li>
           <Typography>
