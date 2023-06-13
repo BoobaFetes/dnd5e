@@ -182,9 +182,18 @@ const aideSection: Array<{ title: ReactNode; body: ReactNode }> = [
         </li>
         <li>
           <Typography>
-            cliquez sur le bouton ci-contre et rechargez l'application
+            cliquez sur le bouton ci-contre pour vider le cache et recharger
+            l'application
           </Typography>
-          <button onClick={() => HeroRepository.reset()}>clear session</button>
+          <button
+            disabled={!HeroRepository.all().length}
+            onClick={() => {
+              HeroRepository.reset();
+              window.location.replace(window.location.href);
+            }}
+          >
+            clear session
+          </button>
         </li>
         <li>
           <Typography>
