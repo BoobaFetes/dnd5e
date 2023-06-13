@@ -51,10 +51,16 @@ const AbilityButtons: FC<IAbilityButtonsProps> = ({
 }) => {
   return (
     <>
-      <Button sx={{ flexGrow: 0 }} onClick={() => minus(abilityIndex)}>
+      <Button
+        sx={{ flexGrow: 0, minWidth: 26 }}
+        onClick={() => minus(abilityIndex)}
+      >
         <RemoveCircleOutlineOutlined />
       </Button>
-      <Button sx={{ flexGrow: 0 }} onClick={() => plus(abilityIndex)}>
+      <Button
+        sx={{ flexGrow: 0, minWidth: 26 }}
+        onClick={() => plus(abilityIndex)}
+      >
         <AddCircleOutlineOutlined />
       </Button>
     </>

@@ -6,13 +6,29 @@ export const HeroAbility: FC<
   PropsWithChildren<ICharacterAbility & GridTypeMap['props']>
 > = memo(({ index, modifier, name, value, children, ...gridProps }) => {
   return (
-    <Grid item container alignItems="center" {...gridProps}>
-      <Typography sx={{ flexGrow: 1 }}>{name}</Typography>
-      <Typography
-        sx={{ flexGrow: 0, width: 50, textAlign: 'end', marginRight: 1 }}
-      >{`(${modifier > 0 ? '+' : ''}${modifier})`}</Typography>
-      <Typography sx={{ flexGrow: 0, width: 50 }}>{value}</Typography>
-      {children}
+    <Grid {...gridProps} item container alignItems="center" wrap="nowrap">
+      <Grid item container sx={{ flexGrow: 1 }}>
+        <Typography>{name}</Typography>
+      </Grid>
+      <Grid
+        item
+        container
+        justifyContent="center"
+        sx={{ flexGrow: 0, width: 100 }}
+      >
+        <Typography>{`(${
+          modifier > 0 ? '+' : ''
+        }${modifier}) ${value}`}</Typography>
+      </Grid>
+      <Grid
+        item
+        container
+        justifyContent="flex-end"
+        wrap="nowrap"
+        sx={{ flexGrow: 0, width: 60 }}
+      >
+        {children}
+      </Grid>
     </Grid>
   );
 });
