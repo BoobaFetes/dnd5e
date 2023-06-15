@@ -82,9 +82,17 @@ export const HeroShop: FC<IHeroShopProps> = memo(
         }
 
         for (const catIndex of Object.keys(_record)) {
-          _record[catIndex].weapons.sort((a, b) =>
-            a.name > b.name ? 1 : a.name < b.name ? -1 : 0
-          );
+          _record[catIndex].weapons.sort((a, b) => {
+            return a.weapon_range > b.weapon_range
+              ? -1
+              : a.weapon_range < b.weapon_range
+              ? 1
+              : a.name > b.name
+              ? 1
+              : a.name < b.name
+              ? -1
+              : 0;
+          });
         }
         setWeaponsByCategory(Object.values(_record));
       },
