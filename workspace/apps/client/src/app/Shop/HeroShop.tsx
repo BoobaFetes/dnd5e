@@ -21,7 +21,6 @@ import { FC, memo, useState } from 'react';
 import { HeroItem } from '../Hero/HeroItem';
 import { ArmorTable } from './ArmorTable';
 import { WeaponTable } from './WeaponTable';
-import { useUtils } from './utils';
 
 interface IHeroShopProps {
   index: string;
@@ -37,6 +36,7 @@ type ArmorsByCategory = { category: EquipmentCategory; armors: Armor[] };
 export const HeroShop: FC<IHeroShopProps> = memo(
   ({ index, heroRepository = HeroRepository }) => {
     const [hero, setHero] = useState<ICharacter>(heroRepository.get(index));
+    const [heroSectionExpanded, setHeroSectionExpanded] = useState(true);
     const save = (hero: ICharacter) => {
       if (heroRepository.update(hero)) {
         setHero(heroRepository.get(hero.index));
@@ -98,12 +98,13 @@ export const HeroShop: FC<IHeroShopProps> = memo(
       },
     });
 
-    const { has } = useUtils(hero);
-
     return (
       <Grid container direction="column" wrap="nowrap">
         <Grid item sx={{ marginTop: 3, marginBottom: 1 }}>
-          <Accordion>
+          <Accordion
+            expanded={heroSectionExpanded}
+            onChange={() => setHeroSectionExpanded(!heroSectionExpanded)}
+          >
             <AccordionSummary>Hero</AccordionSummary>
             <AccordionDetails>
               <HeroItem hero={hero} />
@@ -113,44 +114,65 @@ export const HeroShop: FC<IHeroShopProps> = memo(
         <Grid item sx={{ marginTop: 3, marginBottom: 1 }}>
           <Typography>Shop</Typography>
         </Grid>
-        <Grid item>
-          <Accordion>
-            <AccordionSummary>Armors</AccordionSummary>
-            <AccordionDetails>
-              {armorsByCategory?.map(({ category, armors }) => {
-                return (
+        <Grid
+          item
+          container
+          direction="row"
+          sx={{
+            gap: {
+              xs: 0,
+              md: 1,
+            },
+            flexDirection: {
+              xs: 'column',
+              md: 'row',
+            },
+          }}
+          wrap="nowrap"
+        >
+          <Grid item>
+            <Accordion>
+              <AccordionSummary>Armors</AccordionSummary>
+              <AccordionDetails>
+                {armorsByCategory?.map(({ category, armors }) => {
+                  return (
+                    <Accordion>
+                      <AccordionSummary>{category.name}</AccordionSummary>
+                      <AccordionDetails>
+                        <ArmorTable
+                          hero={hero}
+                          armors={armors.filter(({ str_minimum }) => {
+                            return str_minimum <= hero.abilities.str.value;
+                          })}
+                          onSave={save}
+                        />
+                      </AccordionDetails>
+                    </Accordion>
+                  );
+                })}
+              </AccordionDetails>
+            </Accordion>
+            <Typography></Typography>
+          </Grid>
+          <Grid item>
+            <Accordion>
+              <AccordionSummary>Weapons</AccordionSummary>
+              <AccordionDetails>
+                {weaponsByCategory?.map(({ category, weapons }) => (
                   <Accordion>
                     <AccordionSummary>{category.name}</AccordionSummary>
                     <AccordionDetails>
-                      <ArmorTable
+                      <WeaponTable
                         hero={hero}
-                        armors={armors.filter(({ str_minimum }) => {
-                          return str_minimum <= hero.abilities.str.value;
-                        })}
+                        weapons={weapons}
                         onSave={save}
                       />
                     </AccordionDetails>
                   </Accordion>
-                );
-              })}
-            </AccordionDetails>
-          </Accordion>
-          <Typography></Typography>
-        </Grid>
-        <Grid item>
-          <Accordion>
-            <AccordionSummary>Weapons</AccordionSummary>
-            <AccordionDetails>
-              {weaponsByCategory?.map(({ category, weapons }) => (
-                <Accordion>
-                  <AccordionSummary>{category.name}</AccordionSummary>
-                  <AccordionDetails>
-                    <WeaponTable hero={hero} weapons={weapons} onSave={save} />
-                  </AccordionDetails>
-                </Accordion>
-              ))}
-            </AccordionDetails>
-          </Accordion>
+                ))}
+              </AccordionDetails>
+            </Accordion>
+          </Grid>
         </Grid>
       </Grid>
     );
