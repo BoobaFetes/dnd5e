@@ -13,11 +13,12 @@ export class WeaponShopItem {
       return false;
     }
 
-    let returns = false;
     let weaponIndex: number;
     switch (equipement.weapon_range) {
       case WeaponRange.Ranged:
-        this.hero.gold += this.hero.equipement.ranged?.cost.quantity;
+        if (this.hero.equipement.ranged) {
+          this.hero.gold += this.hero.equipement.ranged.cost.quantity;
+        }
         this.hero.equipement.ranged = undefined;
         break;
       default:
@@ -26,18 +27,17 @@ export class WeaponShopItem {
         );
 
         if (weaponIndex < 0) {
-          break;
+          return false;
         }
 
         this.hero.gold +=
           this.hero.equipement.melees[weaponIndex].cost.quantity;
         this.hero.equipement.melees.splice(weaponIndex, 1);
 
-        returns = true;
         break;
     }
 
-    return returns;
+    return true;
   }
 
   public buy(equipement: Weapon): boolean {
