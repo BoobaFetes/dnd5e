@@ -136,7 +136,7 @@ export const HeroShop: FC<IHeroShopProps> = memo(
               <AccordionDetails>
                 {armorsByCategory?.map(({ category, armors }) => {
                   return (
-                    <Accordion>
+                    <Accordion key={category.index}>
                       <AccordionSummary>{category.name}</AccordionSummary>
                       <AccordionDetails>
                         <ArmorTable
@@ -159,7 +159,7 @@ export const HeroShop: FC<IHeroShopProps> = memo(
               <AccordionSummary>Weapons</AccordionSummary>
               <AccordionDetails>
                 {weaponsByCategory?.map(({ category, weapons }) => (
-                  <Accordion>
+                  <Accordion key={category.index}>
                     <AccordionSummary>{category.name}</AccordionSummary>
                     <AccordionDetails>
                       <WeaponTable

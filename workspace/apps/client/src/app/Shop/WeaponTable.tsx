@@ -67,7 +67,11 @@ export const WeaponTable: FC<{
                   .join('-|-')
                   .split('-')
                   .map((d, i) =>
-                    d === '|' ? <br /> : <Fragment key={i}>{d}</Fragment>
+                    d === '|' ? (
+                      <br key={i} />
+                    ) : (
+                      <Fragment key={i}>{d}</Fragment>
+                    )
                   )}
               </TableCell>
               <TableCell align="right">
