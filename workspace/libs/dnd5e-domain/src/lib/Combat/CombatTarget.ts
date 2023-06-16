@@ -244,7 +244,11 @@ export class CombatTarget implements ICombatTargetProperties {
       } else {
         const weapon: Damage = {
           damage_dice: '1d3',
-          damage_type: { index: 'hand', name: 'hands', desc: [] },
+          damage_type: {
+            index: 'hand',
+            name: 'took off his jaw with a big slap',
+            desc: [],
+          },
         };
         damage += calculate(weapon);
         properties.weapons.push(weapon.damage_type.name);
@@ -299,11 +303,14 @@ function hasFn(hero: ICharacter): HasUtils {
     twoHand: hero.equipement.melees.some((w) =>
       w.properties.some((p) => p.index === 'two-handed')
     ),
-    twoHandRanged: hero.equipement.ranged?.properties.some(
-      (p) => p.index === 'two-handed'
-    ),
+    twoHandRanged:
+      hero.equipement.ranged?.properties.some(
+        (p) => p.index === 'two-handed'
+      ) ?? false,
     oneHandUsedHasTwoHands:
-      !shield && is.oneHandAndTwoHand(hero.equipement.melees[0]),
+      !shield &&
+      hero.equipement.melees?.[0] &&
+      is.oneHandAndTwoHand(hero.equipement.melees[0]),
     oneHandCount: hero.equipement.melees.filter(
       (w) => !w.properties.some((p) => p.index === 'two-handed')
     ).length,
