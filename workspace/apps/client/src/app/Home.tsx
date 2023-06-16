@@ -13,7 +13,7 @@ export const Home: FC = () => {
   return (
     <Grid container spacing={1}>
       <Grid item container direction="column">
-        <Accordion>
+        <Accordion expanded>
           <AccordionSummary>
             <Typography variant="h4"> Aide rapide </Typography>
           </AccordionSummary>
