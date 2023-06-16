@@ -5,7 +5,7 @@ import {
   ICharacterAbility,
 } from '../Character';
 import { Dice } from '../Dice';
-import { Damage, Maybe, WeaponRange } from '../dto';
+import { Armor, Damage, Maybe, Weapon, WeaponRange } from '../dto';
 import { DamageObserver } from './DamageObserver';
 import { IAttackProperties, makeAttackProperties } from './IAttackProperties';
 import { ICombatTargetProperties } from './ICombatTargetProperties';
@@ -17,13 +17,14 @@ export class CombatTarget implements ICombatTargetProperties {
   isPlayer: boolean;
   character: ICharacter;
   armorClass: number;
-
+  has: HasUtils;
   constructor({
     isPlayer,
     character,
   }: Omit<ICombatTargetProperties, 'armorClass'>) {
     this.isPlayer = isPlayer;
     this.character = character;
+    this.has = hasFn(this.character);
     this.armorClass = this.character.equipement.armors.reduce(
       (result, armor) => {
         result += armor.armor_class.base;
@@ -222,20 +223,35 @@ export class CombatTarget implements ICombatTargetProperties {
     if (properties.attackType === WeaponRange.Melee) {
       // Calculate melee damage
       // calculer les dégats des armes de mêlée sans oublier que certaine arme peuvent être prise à 1 et 2 mains
-      const doubleHandWeapon = melees.find((w) => !!w.two_handed_damage);
-      if (doubleHandWeapon) {
+
+      if (this.has.twoHand) {
         properties.useTwoHands = true;
-        damage = calculate(doubleHandWeapon.two_handed_damage);
-        properties.weapons = [doubleHandWeapon.name];
-      } else {
+        damage = calculate(melees[0].damage);
+        properties.weapons = [melees[0].name];
+      } else if (this.has.oneHandUsedHasTwoHands) {
+        properties.useTwoHands = true;
+        damage = calculate(melees[0].two_handed_damage);
+        properties.weapons = [melees[0].name];
+      } else if (this.has.shield && this.has.oneHandCount > 0) {
+        damage = calculate(melees[0].damage);
+        properties.weapons = [melees[0].name];
+      } else if (!this.has.shield && this.has.oneHandCount > 0) {
         properties.weapons = [];
         melees.forEach((weapon) => {
           damage += calculate(weapon.damage);
           properties.weapons.push(weapon.name);
         });
+      } else {
+        const weapon: Damage = {
+          damage_dice: '1d3',
+          damage_type: { index: 'hand', name: 'hands', desc: [] },
+        };
+        damage += calculate(weapon);
+        properties.weapons.push(weapon.damage_type.name);
       }
     } else if (properties.attackType === WeaponRange.Ranged) {
       // Calculate ranged damage
+      properties.useTwoHands = this.has.twoHandRanged;
       properties.weapons = [ranged?.name || ''];
       damage = calculate(ranged?.damage);
     } else if (properties.attackType === 'SPELL') {
@@ -250,4 +266,57 @@ export class CombatTarget implements ICombatTargetProperties {
   isAlly(target: CombatTarget): boolean {
     return this.allies.includes(target);
   }
+}
+
+const is = {
+  ranged: (weapon: Weapon) => weapon.weapon_range === WeaponRange.Ranged,
+  melee: (weapon: Weapon) => weapon.weapon_range === WeaponRange.Melee,
+  ownedWeapon: (weapon: Weapon) =>
+    weapon.properties.some((p) => p.index !== 'two-handed'),
+  twoHand: (weapon: Weapon) =>
+    weapon.properties.some((p) => p.index === 'two-handed'),
+  oneHandAndTwoHand: (weapon: Weapon) =>
+    weapon.properties.some((p) => p.index === 'versatile'),
+};
+
+type HasUtils = {
+  melee: boolean;
+  ranged: boolean;
+  twoHand: boolean;
+  twoHandRanged: boolean;
+  oneHandUsedHasTwoHands: boolean;
+  oneHandCount: number;
+  shield: boolean;
+  armor: boolean;
+  thatArmor: (armor: Armor) => boolean;
+  thatWeapon: (weapon: Weapon) => boolean;
+};
+function hasFn(hero: ICharacter): HasUtils {
+  const shield = hero.equipement.armors.some((a) => a.index === 'shield');
+  return {
+    melee: hero.equipement.melees.some((w) => is.melee(w)),
+    ranged: hero.equipement.melees.some((w) => is.ranged(w)),
+    twoHand: hero.equipement.melees.some((w) =>
+      w.properties.some((p) => p.index === 'two-handed')
+    ),
+    twoHandRanged: hero.equipement.ranged?.properties.some(
+      (p) => p.index === 'two-handed'
+    ),
+    oneHandUsedHasTwoHands:
+      !shield && is.oneHandAndTwoHand(hero.equipement.melees[0]),
+    oneHandCount: hero.equipement.melees.filter(
+      (w) => !w.properties.some((p) => p.index === 'two-handed')
+    ).length,
+    shield,
+    armor: hero.equipement.armors.some((a) => a.index !== 'shield'),
+    thatArmor(armor: Armor) {
+      return hero.equipement.armors.some((a) => a.index === armor.index);
+    },
+    thatWeapon(weapon: Weapon) {
+      return (
+        hero.equipement.ranged?.index === weapon.index ||
+        hero.equipement.melees.some((w) => w.index === weapon.index)
+      );
+    },
+  };
 }

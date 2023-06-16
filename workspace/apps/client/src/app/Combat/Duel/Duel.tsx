@@ -45,7 +45,7 @@ export const Duel: FC<IDuelProps> = memo(
             ? [
                 '',
                 `${hero.character.name}: hit ${target.character.name} with ${
-                  useTwoHands ? '1 hand' : '2 hands'
+                  useTwoHands ? '2 hands' : '1 hand'
                 }`,
                 `${hero.character.name}: give ${damage} ${
                   isCriticalHit ? 'critical ' : ''
