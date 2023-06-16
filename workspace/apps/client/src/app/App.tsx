@@ -1,6 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { HeroRepository } from '@boobafetes/dnd5e-api';
-import { Grid } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import clsx from 'clsx';
 import { useErrorBoundary, withErrorBoundary } from 'react-error-boundary';
 import { Route, Routes } from 'react-router-dom';
@@ -58,18 +57,28 @@ function ErrorFallback({ error }) {
   const { resetBoundary } = useErrorBoundary();
 
   return (
-    <div role="alert">
-      <p>Something went wrong:</p>
-      <pre style={{ color: 'red' }}>{error.message}</pre>
+    <Box role="alert" sx={{ padding: 1 }}>
+      <img
+        style={{ objectFit: 'cover', width: '100%' }}
+        src="assets/band_error.jpg"
+        alt="tu peux pas voir mais y a un truc qui déchire grave"
+      />
+      <p>Attention aux géants de feu !!!</p>
+      <p>clique ci-dessous pour être réapparaître à la page d'acceuil.</p>
       <button
         onClick={() => {
-          HeroRepository.reset();
           resetBoundary();
+          window.location.replace('/');
         }}
       >
-        Try again
+        retour à l'acceuil
       </button>
-    </div>
+      <p>
+        tu pourra essayer de corriger le problème avec la section qui y est
+        dédiée
+      </p>
+      <pre style={{ color: 'red' }}>{error.message}</pre>
+    </Box>
   );
 }
 export default withErrorBoundary(App, {
