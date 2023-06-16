@@ -10,14 +10,14 @@ import {
 } from '@mui/material';
 import { FC, Fragment, memo } from 'react';
 import { WeaponShopItem } from './WeaponShopItem';
-import { useUtils } from './utils';
+import { useEquipementUtils } from './useEquipementUtils';
 
 export const WeaponTable: FC<{
   weapons: Weapon[];
   hero: ICharacter;
   onSave(hero: ICharacter): void;
 }> = memo(({ weapons, hero, onSave }) => {
-  const { is, has } = useUtils(hero);
+  const { is, has } = useEquipementUtils(hero);
   return (
     <Table sx={{ tableLayout: 'fixed' }} size="small">
       <TableHead>
