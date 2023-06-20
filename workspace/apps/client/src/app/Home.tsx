@@ -7,13 +7,33 @@ import {
   Grid,
   Typography,
 } from '@mui/material';
-import { FC, ReactNode } from 'react';
+import { FC, ReactNode, useState } from 'react';
 
 export const Home: FC = () => {
+  const [helpIsOpen, setHelpIsOpen] = useState(false);
   return (
-    <Grid container spacing={1}>
+    <Grid container spacing={1} className="home" sx={{ height: '100%' }}>
+      <Grid
+        item
+        container
+        direction="column"
+        sx={{ height: 'calc(100% - 66px)' }}
+      >
+        <img
+          src="assets/old_dnd.png"
+          alt="a dragon and some heroes"
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'scale-down',
+          }}
+        />
+      </Grid>
       <Grid item container direction="column">
-        <Accordion expanded>
+        <Accordion
+          expanded={helpIsOpen}
+          onChange={() => setHelpIsOpen(!helpIsOpen)}
+        >
           <AccordionSummary>
             <Typography variant="h4"> Aide rapide </Typography>
           </AccordionSummary>

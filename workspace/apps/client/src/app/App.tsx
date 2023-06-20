@@ -18,6 +18,7 @@ export function App() {
       direction="column"
       wrap="nowrap"
       className={clsx('app', styles['root'])}
+      sx={{ height: 'inherit' }}
     >
       <Grid item className="app-bar">
         <ResponsiveAppBar
@@ -36,7 +37,7 @@ export function App() {
         direction="column"
         flexGrow={1}
         wrap="nowrap"
-        sx={{ overflow: 'auto', padding: 2 }}
+        sx={{ overflow: 'auto', padding: 2, height: 'inherit' }}
         className="app-content"
       >
         <Routes>
