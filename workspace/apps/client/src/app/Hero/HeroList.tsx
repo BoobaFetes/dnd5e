@@ -1,12 +1,11 @@
 import { HeroRepository, HeroRepositoryClass } from '@boobafetes/dnd5e-api';
 import { ICharacter } from '@boobafetes/dnd5e-domain';
-import { BedroomBabyOutlined } from '@mui/icons-material';
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Box,
   Button,
+  Checkbox,
   Grid,
   Typography,
 } from '@mui/material';
@@ -22,8 +21,6 @@ export const HeroList: FC<IHeroListProps> = memo(
     const navigate = useNavigate();
     const [heroes, setHeroes] = useState<ICharacter[]>(heroRepository.all());
 
-    const refresh = () => setHeroes(heroRepository.all());
-
     useEffect(() => {
       return heroRepository.subscribe((list) => {
         setHeroes([...list]);
@@ -31,7 +28,27 @@ export const HeroList: FC<IHeroListProps> = memo(
     }, [heroRepository, setHeroes]);
 
     const onAdd = () => navigate('/hero/create');
-    const onUpdate = (hero: ICharacter) => heroRepository.update(hero);
+
+    const canMakeDuel = heroes.length >= 2;
+
+    const onDuel = !canMakeDuel
+      ? undefined
+      : () => {
+          let selectedHeros = heroes.filter((character) => character.selected);
+          if (selectedHeros.length < 2) {
+            selectedHeros = [
+              ...selectedHeros,
+              ...heroes.filter((h, i) => !h.selected && i < 2),
+            ];
+          }
+          navigate(
+            '/combat/duel/' +
+              selectedHeros
+                .filter((_, index) => index < 2)
+                .map((i) => i.index)
+                .join('/')
+          );
+        };
     const onDelete = (hero: ICharacter) => heroRepository.remove(hero.index);
 
     return (
@@ -41,21 +58,11 @@ export const HeroList: FC<IHeroListProps> = memo(
         direction={'column'}
         wrap="nowrap"
       >
-        <Grid item container justifyContent="center" wrap="nowrap">
-          <Button onClick={onAdd}>Add</Button>
-          <Button
-            onClick={() => {
-              navigate(
-                '/combat/duel/' +
-                  heroRepository
-                    .all()
-                    .filter((character) => character.selected)
-                    .filter((_, index) => index < 2)
-                    .map((i) => i.index)
-                    .join('/')
-              );
-            }}
-          >
+        <Grid item container justifyContent="flex-start" wrap="nowrap">
+          <Button onClick={onAdd} sx={{ marginRight: 1 }}>
+            Add Hero
+          </Button>
+          <Button disabled={!canMakeDuel} onClick={onDuel}>
             Duel
           </Button>
         </Grid>
@@ -70,57 +77,67 @@ export const HeroList: FC<IHeroListProps> = memo(
             return (
               <Accordion key={hero.index}>
                 <AccordionSummary>
-                  {hero.selected && (
-                    <BedroomBabyOutlined style={{ marginRight: 16 }} />
-                  )}
-                  <Typography>{hero.name}</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      flexWrap: 'nowrap',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginBottom: 2,
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        flexWrap: 'nowrap',
-                        alignItems: 'center',
-                      }}
+                  <Grid container alignItems="center">
+                    <Grid item flexGrow={0}>
+                      <Checkbox
+                        checked={hero.selected}
+                        onClick={(evt) => evt.stopPropagation()}
+                        onChange={() =>
+                          heroRepository.update({
+                            ...hero,
+                            selected: !hero.selected,
+                          })
+                        }
+                      />
+                    </Grid>
+                    <Grid item flexShrink={0} flexGrow={0}>
+                      <Typography>{hero.name}</Typography>
+                    </Grid>
+                    {!hero.equipement.armors?.length &&
+                      !hero.equipement.melees?.length && (
+                        <Grid item flexShrink={0} flexGrow={0}>
+                          <Typography>
+                            &nbsp;is naked.. You should buy some stuffs
+                          </Typography>
+                        </Grid>
+                      )}
+                    <Grid
+                      item
+                      container
+                      flex="1 1 0px"
+                      justifyContent="flex-end"
                     >
                       <Button
-                        sx={{ width: 100 }}
-                        onClick={() => {
-                          if (onUpdate({ ...hero, selected: !hero.selected })) {
-                            refresh();
-                          }
-                        }}
-                      >
-                        <Typography>
-                          {hero.selected ? 'Unselect' : 'Select'}
-                        </Typography>
-                      </Button>
-                      <Button
-                        sx={{ width: 100 }}
-                        onClick={() => {
+                        sx={{ width: 150 }}
+                        onClick={(evt) => {
+                          evt.stopPropagation();
                           navigate(`/shop/${hero.index}`);
                         }}
                       >
-                        <Typography>Shopping</Typography>
+                        <Typography>Equipements</Typography>
                       </Button>
-                    </Box>
-                    <Button
-                      sx={{ width: 100, color: 'red' }}
-                      onClick={() => onDelete(hero)}
-                    >
-                      <Typography>Delete</Typography>
-                    </Button>
-                  </Box>
-                  <HeroItem hero={hero} />
+                    </Grid>
+                  </Grid>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Grid container direction="column" wrap="nowrap">
+                    <Grid item>
+                      <HeroItem hero={hero} />
+                    </Grid>
+                    <Grid item container justifyContent="flex-end">
+                      <Button
+                        sx={{
+                          width: 100,
+                          color: 'red',
+                          marginTop: 5,
+                          marginBottom: 2,
+                        }}
+                        onClick={() => onDelete(hero)}
+                      >
+                        <Typography>Delete</Typography>
+                      </Button>
+                    </Grid>
+                  </Grid>
                 </AccordionDetails>
               </Accordion>
             );

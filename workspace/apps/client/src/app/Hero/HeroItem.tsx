@@ -36,10 +36,6 @@ export const HeroItem: FC<IHeroItemProps> = memo(({ hero }) => {
               <Typography sx={{ marginRight: 1 }}>Class :</Typography>
               <Typography> {hero.class.name}</Typography>
             </Grid>
-            <Grid item container xs={6}>
-              <Typography sx={{ marginRight: 1 }}>Race :</Typography>
-              <Typography> {hero.race.name}</Typography>
-            </Grid>
           </Grid>
           <Grid item container sx={{ marginTop: 2 }}>
             <Grid item container xs={6}>

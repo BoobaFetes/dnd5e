@@ -24,8 +24,8 @@ export function App() {
           pages={[
             { label: 'Home', to: '/' },
             { label: 'Heroes', to: '/hero' },
-            { label: 'Races', to: '/race' },
-            { label: 'Classes', to: '/class' },
+            // { label: 'Races', to: '/race' },
+            // { label: 'Classes', to: '/class' },
             { label: 'Abilities', to: '/ability' },
           ]}
         />

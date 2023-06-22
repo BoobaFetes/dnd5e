@@ -4,14 +4,49 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Button,
   Grid,
   Typography,
 } from '@mui/material';
 import { FC, ReactNode } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export const Home: FC = () => {
+  const navigate = useNavigate();
+  const onAdd = () => navigate('/hero/create');
+
+  const heroes = HeroRepository.all();
+  const canMakeDuel = heroes.length >= 2;
+
+  const onDuel = !canMakeDuel
+    ? undefined
+    : () => {
+        let selectedHeros = heroes.filter((character) => character.selected);
+        if (selectedHeros.length < 2) {
+          selectedHeros = [
+            ...selectedHeros,
+            ...heroes.filter((h, i) => !h.selected && i < 2),
+          ];
+        }
+        navigate(
+          '/combat/duel/' +
+            selectedHeros
+              .filter((_, index) => index < 2)
+              .map((i) => i.index)
+              .join('/')
+        );
+      };
+
   return (
-    <Grid container spacing={1}>
+    <Grid container spacing={1} direction="column">
+      <Grid item container wrap="nowrap" justifyContent="flex-start">
+        <Button onClick={onAdd} sx={{ marginRight: 1 }}>
+          Add Hero
+        </Button>
+        <Button disabled={!canMakeDuel} onClick={onDuel} sx={{ marginLeft: 1 }}>
+          Duel
+        </Button>
+      </Grid>
       <Grid item container direction="column">
         <Accordion expanded>
           <AccordionSummary>

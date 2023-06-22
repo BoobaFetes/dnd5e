@@ -1,4 +1,4 @@
-import { useQueryClasses, useQueryRaces } from '@boobafetes/dnd5e-api';
+import { useQueryClasses } from '@boobafetes/dnd5e-api';
 import { RefreshOutlined, ShuffleOutlined } from '@mui/icons-material';
 import {
   Button,
@@ -19,12 +19,6 @@ import { useNewHero } from './useNewHero';
 
 export const HeroCreator: FC = memo(() => {
   const {
-    data: { races } = { races: [] },
-    loading: racesLoading,
-    error: racesError,
-  } = useQueryRaces();
-
-  const {
     data: { classes } = { classes: [] },
     loading: classesLoading,
     error: classesError,
@@ -37,16 +31,14 @@ export const HeroCreator: FC = memo(() => {
     setClass,
     abilities,
     setName,
-    setRace,
     setRandomName,
     validate,
     save,
   } = useNewHero({
-    races,
     classes,
-    loading: classesLoading || racesLoading,
+    loading: classesLoading,
   });
-  const loading = classesLoading || racesLoading;
+  const loading = classesLoading;
 
   return !hero ? null : (
     <Grid
@@ -104,23 +96,6 @@ export const HeroCreator: FC = memo(() => {
                 <ShuffleOutlined />
               </Button>
             </Grid>
-          </Grid>
-          <Grid item container direction="column" sx={{ marginTop: 3 }}>
-            <InputLabel id="hero-race-select-label">Race</InputLabel>
-            <Select
-              labelId="hero-race-select-label"
-              id="hero-race-select"
-              value={hero.race.index}
-              label="Race"
-              onChange={({ target: { value } }) => setRace(value)}
-              readOnly={loading}
-            >
-              {races.map((race) => (
-                <MenuItem key={race.index} value={race.index}>
-                  {race.name}
-                </MenuItem>
-              ))}
-            </Select>
           </Grid>
           <Grid item container direction="column" sx={{ marginTop: 3 }}>
             <InputLabel id="hero-class-select-label">Class</InputLabel>

@@ -1,4 +1,4 @@
-import { Class, Race } from '../dto';
+import { Class } from '../dto';
 import { ICharacterAbilities } from './ICharacterAbilities';
 import { ICharacterEquipment } from './ICharacterEquipment';
 
@@ -10,7 +10,6 @@ export interface ICharacter {
   health: number;
   xp: number;
   gold: number;
-  race: Race;
   class: Class;
   abilities: ICharacterAbilities;
   equipement: ICharacterEquipment;
@@ -25,8 +24,6 @@ export function makeCharacter(obj?: Partial<ICharacter>): ICharacter {
     xp: 0,
     gold: 0,
     health: 0,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    race: { index: '', name: '' } as any,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     class: { index: '', name: '' } as any,
     equipement: {

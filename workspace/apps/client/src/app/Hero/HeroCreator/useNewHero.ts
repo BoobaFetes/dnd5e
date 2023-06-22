@@ -5,7 +5,6 @@ import {
   ICharacter,
   ICharacterAbilities,
   ICharacterAbility,
-  Race,
   makeCharacter,
 } from '@boobafetes/dnd5e-domain';
 import { useCallback, useEffect, useState } from 'react';
@@ -23,13 +22,11 @@ type HeroAbility = ICharacter['abilities'];
 export type HeroAbilityKeys = keyof HeroAbility | string;
 
 interface IUseNewHeroOptions {
-  races: Race[];
   classes: Class[];
   loading: boolean;
   heroRepository?: HeroRepositoryClass;
 }
 export function useNewHero({
-  races,
   classes,
   loading,
   heroRepository = HeroRepository,
@@ -131,18 +128,6 @@ export function useNewHero({
     });
   }, []);
 
-  const setRace = useCallback(
-    (index: string) => {
-      const race =
-        races.find((race) => race.index === index) || makeCharacter().race;
-
-      setHero((current) => {
-        return { ...current, race };
-      });
-    },
-    [races]
-  );
-
   const setClass = useCallback(
     (index: string) => {
       const classe =
@@ -167,32 +152,16 @@ export function useNewHero({
   useEffect(() => {
     if (!loading) {
       const classIndex = Math.floor(Math.random() * classes.length);
-      const raceIndex = Math.floor(Math.random() * races.length);
 
       setRandomName();
-      setRace(races[raceIndex].index);
       setClass(classes[classIndex].index);
       abilitiesRandomize();
     }
-  }, [
-    loading,
-    classes,
-    races,
-    setClass,
-    setRace,
-    setRandomName,
-    abilitiesRandomize,
-  ]);
+  }, [loading, classes, setClass, setRandomName, abilitiesRandomize]);
 
   const validate = useCallback(() => {
-    const { race, class: classe, image, name } = hero;
-    return (
-      race?.index &&
-      classe?.index &&
-      image &&
-      name &&
-      remainingAbilityPoints === 0
-    );
+    const { class: classe, image, name } = hero;
+    return classe?.index && image && name && remainingAbilityPoints === 0;
   }, [hero, remainingAbilityPoints]);
 
   return {
@@ -200,7 +169,6 @@ export function useNewHero({
     setName,
     setRandomName,
     setImage,
-    setRace,
     setClass,
     abilities: {
       minus: abilityMinus,
