@@ -50,14 +50,15 @@ export const Duel: FC<IDuelProps> = memo(
                   <span
                     style={{ backgroundColor: colorHero, fontWeight: 'bold' }}
                   >
-                    {hero.character.name}:
+                    {` [${hero.character.name}] `}
                   </span>
+                  {' :'}
                   <br />
                   <ul>
                     <li>
                       hit{' '}
                       <span style={{ backgroundColor: colorTarget }}>
-                        {target.character.name}
+                        {` [${target.character.name}] `}
                       </span>{' '}
                       with {useTwoHands ? '2 hands' : '1 hand'}
                     </li>
@@ -65,7 +66,7 @@ export const Duel: FC<IDuelProps> = memo(
                       give {damage} {isCriticalHit ? 'critical ' : ''} damage(s)
                       of type {attackType.toLocaleLowerCase()} to{' '}
                       <span style={{ backgroundColor: colorTarget }}>
-                        {target.character.name}
+                        {` [${target.character.name}] `}
                       </span>
                     </li>
                     <li>
@@ -85,13 +86,14 @@ export const Duel: FC<IDuelProps> = memo(
                   <span
                     style={{ backgroundColor: colorHero, fontWeight: 'bold' }}
                   >
-                    {hero.character.name}:
+                    {` [${hero.character.name}] `}
                   </span>
+                  {' :'}
                   <br />
                   <div>
                     {isCriticalMiss ? 'critically ' : ' '}miss{' '}
                     <span style={{ backgroundColor: colorTarget }}>
-                      {target.character.name}
+                      {` [${target.character.name}] `}
                     </span>
                   </div>
                 </p>,
@@ -107,17 +109,17 @@ export const Duel: FC<IDuelProps> = memo(
               <span
                 style={{ backgroundColor: colorKiller, fontWeight: 'bold' }}
               >
-                {killer.character.name}
+                {` [${killer.character.name}] `}
               </span>{' '}
               win the duel !!!
               <br />
               <div>
                 <span style={{ backgroundColor: colorKiller }}>
-                  {killer.character.name}
+                  {` [${killer.character.name}] `}
                 </span>{' '}
                 has killed{' '}
                 <span style={{ backgroundColor: colorHero }}>
-                  {hero.character.name}
+                  {` [${hero.character.name}] `}
                 </span>
               </div>
             </p>,
