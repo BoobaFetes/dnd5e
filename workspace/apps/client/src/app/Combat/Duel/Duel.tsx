@@ -5,9 +5,10 @@ import {
   DamageObserver,
 } from '@boobafetes/dnd5e-domain';
 import { Box, Grid } from '@mui/material';
-import { FC, memo, useEffect, useRef, useState } from 'react';
+import { FC, ReactNode, memo, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Attacker } from '../Attacker';
+import { generateUniqueColor } from './generateUniqueColor';
 
 interface IDuelProps {
   heroRepository?: HeroRepositoryClass;
@@ -21,7 +22,7 @@ export const Duel: FC<IDuelProps> = memo(
     ]);
     const [attackerIndex, setAttackerIndex] = useState<number>(null);
     const [engine] = useState(new CombatEngine());
-    const [messages, setMessages] = useState<string[]>([]);
+    const [messages, setMessages] = useState<ReactNode[]>([]);
 
     useEffect(() => {
       const damageObserver: DamageObserver = {
@@ -41,36 +42,73 @@ export const Duel: FC<IDuelProps> = memo(
             weapons,
           }
         ) {
+          const colorHero = generateUniqueColor(hero.character.name);
+          const colorTarget = generateUniqueColor(target.character.name);
           const msg = attackResult
             ? [
-                '',
-                `${hero.character.name}: hit ${target.character.name} with ${
-                  useTwoHands ? '2 hands' : '1 hand'
-                }`,
-                `${hero.character.name}: give ${damage} ${
-                  isCriticalHit ? 'critical ' : ''
-                } damage(s) of type ${attackType.toLocaleLowerCase()} to ${
-                  target.character.name
-                }`,
-                `${
-                  hero.character.name
-                }: stats : roll: ${attackRoll} / modifier:${attackModifiers} / finesse:${useFinesse} / weapons:${weapons.join(
-                  ', '
-                )}`,
+                <p>
+                  <div style={{ color: colorHero, fontWeight: 'bold' }}>
+                    {hero.character.name}:
+                  </div>
+                  <ul>
+                    <li>
+                      hit{' '}
+                      <span style={{ color: colorTarget }}>
+                        {target.character.name}
+                      </span>{' '}
+                      with {useTwoHands ? '2 hands' : '1 hand'}
+                    </li>
+                    <li>
+                      give {damage} {isCriticalHit ? 'critical ' : ''} damage(s)
+                      of type {attackType.toLocaleLowerCase()} to{' '}
+                      <span style={{ color: colorTarget }}>
+                        {target.character.name}
+                      </span>
+                    </li>
+                    <li>
+                      stats :
+                      <ul>
+                        <li>roll: {attackRoll}</li>
+                        <li>modifier:{attackModifiers}</li>
+                        <li>finesse:{useFinesse}</li>
+                        <li>weapons:{weapons.join(', ')}</li>
+                      </ul>
+                    </li>
+                  </ul>
+                </p>,
               ]
             : [
-                '',
-                `${hero.character.name}: miss ${
-                  isCriticalMiss ? 'really ' : ''
-                }${target.character.name}`,
+                <p>
+                  <div style={{ color: colorHero, fontWeight: 'bold' }}>
+                    {hero.character.name}:
+                  </div>
+                  <div>
+                    {isCriticalMiss ? 'critically ' : ' '}miss{' '}
+                    <span style={{ color: colorTarget }}>
+                      {target.character.name}
+                    </span>
+                  </div>
+                </p>,
               ];
 
           setMessages((prev) => [...msg, ...prev]);
         },
         characterDied(hero, killer) {
+          const colorHero = generateUniqueColor(hero.character.name);
+          const colorKiller = generateUniqueColor(killer.character.name);
           setMessages((prev) => [
-            `${killer.character.name} has killed ${hero.character.name}`,
-            `${killer.character.name} has win the combat !!!`,
+            <p>
+              <div style={{ color: colorKiller, fontWeight: 'bold' }}>
+                {killer.character.name} win the combat !!!
+              </div>
+              <div>
+                <span style={{ color: colorKiller }}>
+                  {killer.character.name}
+                </span>{' '}
+                has killed{' '}
+                <span style={{ color: colorHero }}>{hero.character.name}</span>
+              </div>
+            </p>,
             ...prev,
           ]);
           hero.detachAllAttackObservers();
@@ -91,6 +129,7 @@ export const Duel: FC<IDuelProps> = memo(
       return () => {
         attackObservers.forEach((obs) => obs());
         engine.clearTargets();
+        setMessages([]);
       };
     }, [params, heroRepository, engine]);
 
