@@ -1,11 +1,15 @@
 export function generateUniqueColor(str: string) {
-  if (!str) {
-    return undefined;
+  try {
+    if (!str) {
+      return undefined;
+    }
+    const hash = md5(str);
+    const colorHex = hash.slice(0, 6).replace(/-/, '0');
+    const colorHTML = `#${colorHex}`;
+    return colorHTML;
+  } catch (ex) {
+    return '#000000';
   }
-  const hash = md5(str);
-  const colorHex = hash.slice(0, 6).replace(/-/, '0');
-  const colorHTML = `#${colorHex}`;
-  return colorHTML;
 }
 
 function md5(str: string) {

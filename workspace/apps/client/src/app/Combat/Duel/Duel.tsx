@@ -47,13 +47,16 @@ export const Duel: FC<IDuelProps> = memo(
           const msg = attackResult
             ? [
                 <p>
-                  <div style={{ color: colorHero, fontWeight: 'bold' }}>
+                  <span
+                    style={{ backgroundColor: colorHero, fontWeight: 'bold' }}
+                  >
                     {hero.character.name}:
-                  </div>
+                  </span>
+                  <br />
                   <ul>
                     <li>
                       hit{' '}
-                      <span style={{ color: colorTarget }}>
+                      <span style={{ backgroundColor: colorTarget }}>
                         {target.character.name}
                       </span>{' '}
                       with {useTwoHands ? '2 hands' : '1 hand'}
@@ -61,7 +64,7 @@ export const Duel: FC<IDuelProps> = memo(
                     <li>
                       give {damage} {isCriticalHit ? 'critical ' : ''} damage(s)
                       of type {attackType.toLocaleLowerCase()} to{' '}
-                      <span style={{ color: colorTarget }}>
+                      <span style={{ backgroundColor: colorTarget }}>
                         {target.character.name}
                       </span>
                     </li>
@@ -79,12 +82,15 @@ export const Duel: FC<IDuelProps> = memo(
               ]
             : [
                 <p>
-                  <div style={{ color: colorHero, fontWeight: 'bold' }}>
+                  <span
+                    style={{ backgroundColor: colorHero, fontWeight: 'bold' }}
+                  >
                     {hero.character.name}:
-                  </div>
+                  </span>
+                  <br />
                   <div>
                     {isCriticalMiss ? 'critically ' : ' '}miss{' '}
-                    <span style={{ color: colorTarget }}>
+                    <span style={{ backgroundColor: colorTarget }}>
                       {target.character.name}
                     </span>
                   </div>
@@ -98,15 +104,21 @@ export const Duel: FC<IDuelProps> = memo(
           const colorKiller = generateUniqueColor(killer.character.name);
           setMessages((prev) => [
             <p>
-              <div style={{ color: colorKiller, fontWeight: 'bold' }}>
-                {killer.character.name} win the combat !!!
-              </div>
+              <span
+                style={{ backgroundColor: colorKiller, fontWeight: 'bold' }}
+              >
+                {killer.character.name}
+              </span>{' '}
+              win the duel !!!
+              <br />
               <div>
-                <span style={{ color: colorKiller }}>
+                <span style={{ backgroundColor: colorKiller }}>
                   {killer.character.name}
                 </span>{' '}
                 has killed{' '}
-                <span style={{ color: colorHero }}>{hero.character.name}</span>
+                <span style={{ backgroundColor: colorHero }}>
+                  {hero.character.name}
+                </span>
               </div>
             </p>,
             ...prev,
